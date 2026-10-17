@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+out
+coverage
+
+# Turborepo
+.turbo
+
+# Prisma generated client
+apps/backend/src/generated
+
+# Lockfiles
+bun.lock
+bun.lockb
+
+# Misc
+.DS_Store

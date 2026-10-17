@@ -1,0 +1,110 @@
+// Prisma schema for the codebase exploration platform.
+// The generated client is written to `src/generated/prisma` (gitignored).
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  login     String   @unique
+  name      String?
+  email     String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  account      GitHubAccount?
+  sessions     Session[]
+  repositories Repository[]
+}
+
+/// Stores the GitHub connection (OAuth token or personal access token).
+/// Tokens should be encrypted at rest in production.
+model GitHubAccount {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  githubUserId String   @unique
+  accessToken  String
+  scopes       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Repository {
+  id            String   @id @default(cuid())
+  userId        String
+  githubId      BigInt
+  owner         String
+  name          String
+  fullName      String
+  description   String?
+  defaultBranch String   @default("main")
+  language      String?
+  isPrivate     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files    RepositoryFile[]
+  analyses Analysis[]
+
+  @@unique([userId, githubId])
+  @@index([userId])
+}
+
+model RepositoryFile {
+  id           String   @id @default(cuid())
+  repositoryId String
+  path         String
+  sha          String
+  type         String   @default("blob")
+  size         Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, path])
+  @@index([repositoryId])
+}
+
+/// An AI-generated artifact: file summaries, architecture maps,
+/// data-flow / sequence / flowchart diagrams, etc. `content` is JSON whose
+/// shape depends on `kind`.
+model Analysis {
+  id           String   @id @default(cuid())
+  repositoryId String
+  kind         String
+  targetPath   String?
+  model        String?
+  content      Json
+  createdAt    DateTime @default(now())
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([repositoryId, kind])
+  @@index([repositoryId, targetPath])
+}
