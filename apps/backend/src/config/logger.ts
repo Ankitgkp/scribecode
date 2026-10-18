@@ -1,17 +1,17 @@
 import { pino } from "pino";
 
-import { env, isProduction } from "@/config/env";
+import { env } from "@/config/env";
 
 /**
  * Application-wide structured logger.
- * Human-readable output in development, JSON in production.
+ * JSON is safe for serverless runtimes. Local development can opt into
+ * human-readable output with LOG_PRETTY=true.
  */
 export const logger = pino({
   level: env.LOG_LEVEL,
   base: { env: env.NODE_ENV },
-  ...(isProduction
-    ? {}
-    : {
+  ...(env.LOG_PRETTY
+    ? {
         transport: {
           target: "pino-pretty",
           options: {
@@ -20,5 +20,6 @@ export const logger = pino({
             ignore: "pid,hostname,env",
           },
         },
-      }),
+      }
+    : {}),
 });

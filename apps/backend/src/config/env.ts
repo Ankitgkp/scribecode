@@ -16,6 +16,11 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
   FRONTEND_URL: z.string().default("http://localhost:5173"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
+  /** Enables the local-only pino-pretty transport. */
+  LOG_PRETTY: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
   APP_VERSION: z.string().default("0.1.0"),
 
   // Sessions (opaque tokens stored in the database, delivered via an httpOnly cookie).
