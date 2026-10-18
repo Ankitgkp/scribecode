@@ -44,3 +44,4 @@ bun-debug.log*
 .idea
 .vscode/*
 !.vscode/extensions.json
+.env*.local
