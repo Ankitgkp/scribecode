@@ -39,7 +39,9 @@ type CardNavProps = {
 const CardNav = CardNavSource as unknown as (props: CardNavProps) => ReactNode;
 
 function RouterLink({ href = "/", ...props }: NavLinkProps) {
-  if (/^(https?:)?\/\//.test(href)) {
+  // API links must trigger a document navigation so OAuth can follow the
+  // backend's redirect. React Router would otherwise handle them as app routes.
+  if (/^(https?:)?\/\//.test(href) || href.startsWith("/api/")) {
     return <a href={href} {...props} />;
   }
 
