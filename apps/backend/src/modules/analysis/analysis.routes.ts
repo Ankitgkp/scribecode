@@ -4,7 +4,12 @@ import { requireAuth } from "@/middleware/auth";
 import { validate } from "@/middleware/validate";
 import { repositoryParamsSchema } from "@/schemas/repository-params";
 import { analysisController } from "@/modules/analysis/analysis.controller";
-import { architectureRequestSchema, explainFileSchema } from "@/modules/analysis/analysis.schema";
+import {
+  architectureRequestSchema,
+  explainFileSchema,
+  preparationRequestSchema,
+  interviewQuestionSchema,
+} from "@/modules/analysis/analysis.schema";
 
 export const analysisRouter = Router();
 
@@ -21,4 +26,16 @@ analysisRouter.post(
   validate(repositoryParamsSchema, "params"),
   validate(architectureRequestSchema, "body"),
   analysisController.architecture,
+);
+analysisRouter.post(
+  "/:owner/:name/interview/question",
+  validate(repositoryParamsSchema, "params"),
+  validate(interviewQuestionSchema, "body"),
+  analysisController.interviewQuestion,
+);
+analysisRouter.post(
+  "/:owner/:name/prepare",
+  validate(repositoryParamsSchema, "params"),
+  validate(preparationRequestSchema, "body"),
+  analysisController.prepare,
 );

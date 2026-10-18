@@ -69,6 +69,9 @@ export async function syncRepositoryFiles(userId: string, owner: string, name: s
 
   await prisma.$transaction([
     prisma.repositoryFile.deleteMany({ where: { repositoryId: repository.id } }),
+    // Every repository-wide insight is derived from this tree. Remove it in the
+    // same sync transaction so an old map can never be served for new files.
+    prisma.analysis.deleteMany({ where: { repositoryId: repository.id } }),
     prisma.repositoryFile.createMany({
       data: tree.map((entry) => ({
         repositoryId: repository.id,

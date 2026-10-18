@@ -15,6 +15,8 @@ const protectedRequests = [
   { method: "get" as const, path: "/api/v1/graph/acme/app/dependency" },
   { method: "post" as const, path: "/api/v1/analysis/acme/app/file" },
   { method: "post" as const, path: "/api/v1/analysis/acme/app/architecture" },
+  { method: "post" as const, path: "/api/v1/analysis/acme/app/prepare" },
+  { method: "post" as const, path: "/api/v1/analysis/acme/app/interview/question" },
 ];
 
 describe("authentication boundary", () => {

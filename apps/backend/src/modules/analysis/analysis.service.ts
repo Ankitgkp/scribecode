@@ -31,6 +31,8 @@ export interface FileAnalysisResult extends FileAnalysis {
   cached: boolean;
 }
 
+const pendingFileAnalyses = new Map<string, Promise<FileAnalysisResult>>();
+
 export interface ArchitectureResult extends ArchitectureAnalysis {
   cached: boolean;
 }
@@ -160,7 +162,7 @@ export function buildFilePrompt(path: string, source: NumberedSource): string {
     `Explain the file "${path}" so a developer who has never seen this repository understands it fast.`,
     "",
     "Return:",
-    "- purpose: ONE sentence (max 20 words) describing what the file is for.",
+    "- purpose: TWO short sentences (max 45 words total) explaining the file's role and why it matters in the project. Make this a crisp explanation someone can say in an interview.",
     "- highlights: 3-6 bullets, each max 12 words, covering only what actually matters.",
     "- blocks: the 2-8 MOST IMPORTANT contiguous line ranges (functions, classes, components, hooks, routes, config blocks), each with:",
     "  - name: the symbol or feature name",
@@ -193,54 +195,72 @@ export async function analyzeFile(
   options: { refresh: boolean },
 ): Promise<FileAnalysisResult> {
   const repository = await getConnectedRepository(userId, owner, name);
-
-  if (!options.refresh) {
-    const cached = await prisma.analysis.findFirst({
-      where: { repositoryId: repository.id, kind: FILE_BLOCKS_KIND, targetPath: path },
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (cached) {
-      return { ...fromJsonInput<FileAnalysis>(cached.content), cached: true };
-    }
+  // Tie the cache to the synced Git blob, not merely its path. This lets a
+  // changed file receive a new walkthrough even if an older analysis exists.
+  const treeEntry = await prisma.repositoryFile.findUnique({
+    where: { repositoryId_path: { repositoryId: repository.id, path } },
+  });
+  const cacheKey = treeEntry ? `${path}@${treeEntry.sha}` : path;
+  const pendingKey = `${repository.id}:${cacheKey}`;
+  const pending = pendingFileAnalyses.get(pendingKey);
+  if (pending) return pending;
+  const work = readOrGenerate();
+  pendingFileAnalyses.set(pendingKey, work);
+  try {
+    return await work;
+  } finally {
+    pendingFileAnalyses.delete(pendingKey);
   }
 
-  const file = await getFileContent(userId, owner, name, path);
-  const lineCount = splitLines(file.content).length;
-  const source = numberLines(file.content, MAX_PROMPT_LINES);
+  async function readOrGenerate(): Promise<FileAnalysisResult> {
+    if (!options.refresh) {
+      const cached = await prisma.analysis.findFirst({
+        where: { repositoryId: repository.id, kind: FILE_BLOCKS_KIND, targetPath: cacheKey },
+        orderBy: { createdAt: "desc" },
+      });
 
-  const analysis = await llm.generateStructured<FileAnalysis>({
-    schema: fileAnalysisSchema,
-    schemaName: "FileAnalysis",
-    system: SYSTEM_PROMPT,
-    prompt: buildFilePrompt(file.path, source),
-    mockValue: mockFileAnalysis(file.path),
-  });
+      if (cached) {
+        return { ...fromJsonInput<FileAnalysis>(cached.content), cached: true };
+      }
+    }
 
-  const normalized: FileAnalysis = {
-    purpose: analysis.purpose.trim(),
-    highlights: analysis.highlights
-      .map((highlight) => highlight.trim())
-      .filter((highlight) => highlight.length > 0)
-      .slice(0, MAX_HIGHLIGHTS),
-    blocks: normalizeBlocks(analysis.blocks, lineCount),
-    dependencies: analysis.dependencies
-      .map((dependency) => dependency.trim())
-      .filter((dependency) => dependency.length > 0)
-      .slice(0, MAX_DEPENDENCIES),
-  };
+    const file = await getFileContent(userId, owner, name, path);
+    const lineCount = splitLines(file.content).length;
+    const source = numberLines(file.content, MAX_PROMPT_LINES);
 
-  await prisma.analysis.create({
-    data: {
-      repositoryId: repository.id,
-      kind: FILE_BLOCKS_KIND,
-      targetPath: path,
-      model: llm.model,
-      content: toJsonInput(normalized),
-    },
-  });
+    const analysis = await llm.generateStructured<FileAnalysis>({
+      schema: fileAnalysisSchema,
+      schemaName: "FileAnalysis",
+      system: SYSTEM_PROMPT,
+      prompt: buildFilePrompt(file.path, source),
+      mockValue: mockFileAnalysis(file.path),
+    });
 
-  return { ...normalized, cached: false };
+    const normalized: FileAnalysis = {
+      purpose: analysis.purpose.trim(),
+      highlights: analysis.highlights
+        .map((highlight) => highlight.trim())
+        .filter((highlight) => highlight.length > 0)
+        .slice(0, MAX_HIGHLIGHTS),
+      blocks: normalizeBlocks(analysis.blocks, lineCount),
+      dependencies: analysis.dependencies
+        .map((dependency) => dependency.trim())
+        .filter((dependency) => dependency.length > 0)
+        .slice(0, MAX_DEPENDENCIES),
+    };
+
+    await prisma.analysis.create({
+      data: {
+        repositoryId: repository.id,
+        kind: FILE_BLOCKS_KIND,
+        targetPath: cacheKey,
+        model: llm.model,
+        content: toJsonInput(normalized),
+      },
+    });
+
+    return { ...normalized, cached: false };
+  }
 }
 
 /**

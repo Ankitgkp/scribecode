@@ -154,7 +154,13 @@ export function useAsyncResource<T>(
     setReloadToken((token) => token + 1);
   }, []);
 
-  return { status, data, error, reload };
+  const matchesKey = keyRef.current === key;
+  return {
+    status: matchesKey ? status : "loading",
+    data: matchesKey ? data : null,
+    error: matchesKey ? error : null,
+    reload,
+  };
 }
 
 /** Helper for hooks that need to compare their dependency inputs by value. */

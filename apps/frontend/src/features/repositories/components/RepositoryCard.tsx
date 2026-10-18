@@ -23,7 +23,7 @@ export function RepositoryCard({ repository }: { repository: ConnectedRepository
           className="inline-flex items-center gap-1 text-sm font-medium hover:underline"
           to={`/repositories/${repository.owner}/${repository.name}`}
         >
-          Explore
+          Prepare for interview
           <ArrowRight className="size-3.5" />
         </Link>
       </CardContent>

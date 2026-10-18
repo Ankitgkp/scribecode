@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, File as FileIcon, Folder, FolderOpen } from 
 
 import { cn } from "@/lib/utils";
 import type { FileTreeNode } from "@/features/explorer/lib/buildFileTree";
+import { REPOSITORY_FILE_DRAG_TYPE } from "@/features/insights/lib/interview-story";
 
 interface FileTreeProps {
   nodes: FileTreeNode[];
@@ -48,7 +49,7 @@ function FileTreeItem({ node, depth, selectedPath, expandAll, onSelect }: FileTr
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="flex w-full items-center gap-1.5 rounded-md py-1 pr-2 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="flex w-full items-center gap-1.5 rounded-xl py-2 pr-2 text-left text-sm font-medium text-[#52625d] transition-colors hover:bg-[#eef3ef] hover:text-foreground dark:text-white/65 dark:hover:bg-white/10"
           style={{ paddingLeft }}
         >
           {isOpen ? <ChevronDown className="size-3.5 shrink-0" /> : <ChevronRight className="size-3.5 shrink-0" />}
@@ -80,12 +81,19 @@ function FileTreeItem({ node, depth, selectedPath, expandAll, onSelect }: FileTr
     <li role="treeitem" aria-selected={isSelected}>
       <button
         type="button"
+        draggable
+        onDragStart={(event) => {
+          event.dataTransfer.setData(REPOSITORY_FILE_DRAG_TYPE, node.path);
+          event.dataTransfer.setData("text/plain", node.path);
+          event.dataTransfer.effectAllowed = "copy";
+        }}
+        title={`${node.path} · Drag onto the file connections map`}
         onClick={() => onSelect(node.path)}
         className={cn(
-          "flex w-full items-center gap-1.5 rounded-md py-1 pr-2 text-left text-sm transition-colors",
+          "flex w-full items-center gap-1.5 rounded-xl py-2 pr-2 text-left text-sm transition-colors",
           isSelected
-            ? "bg-accent font-medium text-foreground"
-            : "text-muted-foreground hover:bg-accent hover:text-foreground",
+            ? "bg-[#dff1e8] font-semibold text-[#1d5745] dark:bg-teal-900/60 dark:text-teal-100"
+            : "text-muted-foreground hover:bg-[#eef3ef] hover:text-foreground dark:hover:bg-white/10",
         )}
         style={{ paddingLeft: paddingLeft + 18 }}
       >

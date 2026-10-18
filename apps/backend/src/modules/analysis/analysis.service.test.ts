@@ -5,6 +5,7 @@ import type { FileBlock } from "@/modules/analysis/analysis.schema";
 const mocks = vi.hoisted(() => ({
   analysisFindFirst: vi.fn(),
   analysisCreate: vi.fn(),
+  repositoryFileFindUnique: vi.fn(),
   getConnectedRepository: vi.fn(),
   getFileContent: vi.fn(),
   listFileTree: vi.fn(),
@@ -14,6 +15,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     analysis: { findFirst: mocks.analysisFindFirst, create: mocks.analysisCreate },
+    repositoryFile: { findUnique: mocks.repositoryFileFindUnique },
   },
 }));
 
@@ -104,6 +106,7 @@ describe("analysis service", () => {
     vi.clearAllMocks();
 
     mocks.getConnectedRepository.mockResolvedValue({ id: "repo-1", defaultBranch: "main" });
+    mocks.repositoryFileFindUnique.mockResolvedValue({ sha: "tree-sha" });
     mocks.getFileContent.mockResolvedValue({
       path: "src/index.ts",
       sha: "sha",
@@ -144,6 +147,24 @@ describe("analysis service", () => {
     expect(result.highlights).toEqual(["One thing"]);
     expect(result.blocks).toHaveLength(1);
     expect(mocks.analysisCreate).toHaveBeenCalledOnce();
+    expect(mocks.analysisCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ targetPath: "src/index.ts@tree-sha" }) }),
+    );
+  });
+
+  it("shares an in-flight file explanation between interview and graph views", async () => {
+    mocks.analysisFindFirst.mockResolvedValue(null);
+    mocks.generateStructured.mockResolvedValue({
+      purpose: "Starts the app.",
+      highlights: [],
+      blocks: [],
+      dependencies: [],
+    });
+    await Promise.all([
+      analyzeFile("user-1", "acme", "app", "src/index.ts", { refresh: false }),
+      analyzeFile("user-1", "acme", "app", "src/index.ts", { refresh: false }),
+    ]);
+    expect(mocks.generateStructured).toHaveBeenCalledOnce();
   });
 
   it("normalizes architecture edges into a graph with stable ids", async () => {

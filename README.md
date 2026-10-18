@@ -2,7 +2,8 @@
 
 An AI-powered web app for understanding existing GitHub repositories — especially large ones
 produced by AI coding tools. Connect GitHub, pick a repository, explore its file tree, select a
-file, and see what it does and how it relates to the rest of the app.
+file, and see what it does and how it relates to the rest of the app. The default workspace is
+**Quick interview preparation**: a file-by-file project story with speaking checkpoints and an AI coach inside each slide.
 
 Understanding goes beyond dependency graphs: a file's imports and importers are shown as a focused,
 clickable neighbourhood, and an AI-generated architecture map groups the repository into modules.
@@ -15,7 +16,7 @@ clickable neighbourhood, and an AI-generated architecture map groups the reposit
 1. **Connect GitHub** — via an OAuth App, or a personal access token for local development.
 2. **Pick a repository** — your GitHub repositories are listed and can be connected to the app.
 3. **Explore the file tree** — the tree is synced from GitHub and cached in PostgreSQL.
-4. **Open a file** — the explanation leads: a one-line purpose, a few crisp highlights, then an
+4. **Open a file** — the explanation leads: a short purpose in large text, a few crisp highlights, then an
    **annotated walkthrough** where each major block (function, class, hook, config) sits beside a
    short, colour-coded callout pointing at its code. Full explanations live behind "More detail",
    and the untouched source is one toggle away.
@@ -24,6 +25,12 @@ clickable neighbourhood, and an AI-generated architecture map groups the reposit
    most connected files act as a map of the repository.
 6. **Zoom out** — an AI-generated architecture map groups the repository into modules and lists how
    they relate, instead of drawing an unreadable graph.
+7. **Practice your story** — follow a reading route from likely entry files through their imports,
+   reveal speaking notes, mark stops practiced, and ask questions without leaving the slide.
+   The route covers every synced file, with lighter stops for assets and generated files. It is a
+   reading guide, not a runtime trace. File explanations load on demand and are cached by file identity;
+   coaching answers are grounded in a bounded selection of source files and cached for repeated questions.
+   In the map, select a file in the tree or drag it onto the canvas to follow annotated connections.
 
 Both views are generated once per repository (and cached), so switching tabs is instant and never
 re-runs the graph build or the model.
@@ -200,6 +207,8 @@ a consistent envelope: `{ success: true, data }` or `{ success: false, error: { 
 | GET    | `/files/:owner/:name/tree`                         | File tree                                |
 | GET    | `/files/:owner/:name/content?path=`                | File contents                            |
 | GET    | `/graph/:owner/:name/dependency?refresh=`          | Dependency graph (cached per repo)       |
+| POST   | `/analysis/:owner/:name/prepare`                   | Cached project tour and dependency map   |
+| POST   | `/analysis/:owner/:name/interview/question`        | Cached, source-grounded interview answer |
 | POST   | `/analysis/:owner/:name/file`                      | AI block walkthrough for a file           |
 | POST   | `/analysis/:owner/:name/architecture`              | AI architecture map                      |
 

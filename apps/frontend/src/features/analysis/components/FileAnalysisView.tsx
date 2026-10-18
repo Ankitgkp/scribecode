@@ -1,5 +1,6 @@
-import { AlertTriangle, Check, Info, Loader2, RefreshCw, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Check, Info, RefreshCw, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { UnderstandingLoader } from "@/components/ui/understanding-loader";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,7 @@ interface FileAnalysisViewProps {
   owner: string;
   name: string;
   path: string;
+  context?: ReactNode;
 }
 
 /**
@@ -35,7 +37,7 @@ interface FileAnalysisViewProps {
  * callout. Full explanations live behind "More detail", and the untouched
  * source is always one toggle away.
  */
-export function FileAnalysisView({ owner, name, path }: FileAnalysisViewProps) {
+export function FileAnalysisView({ owner, name, path, context }: FileAnalysisViewProps) {
   const file = useFileContent(owner, name, path);
   const analysis = useFileAnalysis(owner, name, path);
 
@@ -66,15 +68,15 @@ export function FileAnalysisView({ owner, name, path }: FileAnalysisViewProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
+      <Card className="rounded-[1.75rem] border-[#e7eae8] bg-[#f1eef9] shadow-none dark:border-white/10 dark:bg-violet-950/35">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="size-4" />
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <span className="grid size-9 place-items-center rounded-xl bg-white/70 text-violet-700 dark:bg-white/10 dark:text-violet-200">
+              <Sparkles className="size-4" />
+            </span>
             What this file does
           </CardTitle>
-          <CardDescription>
-            {analysis.data?.cached ? "Cached analysis." : "Generated from the file contents."}
-          </CardDescription>
+          <CardDescription className="break-all font-mono text-xs">{path}</CardDescription>
           <CardAction>
             <Button variant="outline" size="sm" onClick={analysis.regenerate} disabled={analysis.status === "loading"}>
               <RefreshCw className={cn("size-3.5", analysis.status === "loading" && "animate-spin")} />
@@ -84,12 +86,7 @@ export function FileAnalysisView({ owner, name, path }: FileAnalysisViewProps) {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-4">
-          {analysis.status === "loading" ? (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Reading this file…
-            </p>
-          ) : null}
+          {analysis.status === "loading" ? <UnderstandingLoader label="Reading this file…" /> : null}
 
           {analysis.status === "error" ? <p className="text-sm text-destructive">{analysis.error}</p> : null}
 
@@ -97,14 +94,11 @@ export function FileAnalysisView({ owner, name, path }: FileAnalysisViewProps) {
         </CardContent>
       </Card>
 
+      {context}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Tabs items={MODES} value={mode} onChange={(next) => setMode(next)} />
-        {analysis.status === "loading" ? (
-          <span className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="size-3.5 animate-spin" />
-            Annotating the code…
-          </span>
-        ) : null}
+        {analysis.status === "loading" ? <UnderstandingLoader compact label="Annotating the code…" /> : null}
       </div>
 
       {mode === "raw" ? (
@@ -158,10 +152,10 @@ export function FileAnalysisView({ owner, name, path }: FileAnalysisViewProps) {
 function Summary({ analysis }: { analysis: FileAnalysis }) {
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm leading-relaxed font-medium">{analysis.purpose}</p>
+      <p className="max-w-4xl text-2xl leading-relaxed font-medium tracking-tight sm:text-3xl">{analysis.purpose}</p>
 
       {analysis.highlights.length > 0 ? (
-        <ul className="flex flex-col gap-1.5">
+        <ul className="grid gap-2 sm:grid-cols-2">
           {analysis.highlights.map((highlight) => (
             <li key={highlight} className="flex items-start gap-2 text-sm text-muted-foreground">
               <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-500 dark:text-emerald-400" />
@@ -193,10 +187,5 @@ function FilePlaceholder({ status, error }: { status: "loading" | "success" | "e
     return <p className="text-sm text-destructive">{error}</p>;
   }
 
-  return (
-    <p className="flex items-center gap-2 rounded-lg border border-dashed px-4 py-10 text-sm text-muted-foreground">
-      <Loader2 className="size-4 animate-spin" />
-      Loading file…
-    </p>
-  );
+  return <UnderstandingLoader label="Loading file…" />;
 }

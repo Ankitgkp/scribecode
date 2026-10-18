@@ -27,7 +27,6 @@ describe("DependencyGraphPanel", () => {
         error={null}
         selectedPath="src/index.ts"
         onSelectFile={vi.fn()}
-        onRefresh={vi.fn()}
       />,
     );
 
@@ -39,18 +38,9 @@ describe("DependencyGraphPanel", () => {
   });
 
   it("asks for a file when none is selected", () => {
-    render(
-      <DependencyGraphPanel
-        graph={GRAPH}
-        status="success"
-        error={null}
-        selectedPath=""
-        onSelectFile={vi.fn()}
-        onRefresh={vi.fn()}
-      />,
-    );
+    render(<DependencyGraphPanel graph={GRAPH} status="success" error={null} selectedPath="" onSelectFile={vi.fn()} />);
 
-    expect(screen.getByText("Select a file in the tree to see what it depends on.")).toBeDefined();
+    expect(screen.getByText("Select a file in the tree to see its impact on the project.")).toBeDefined();
   });
 
   it("walks the graph when a dependency is clicked", () => {
@@ -63,7 +53,6 @@ describe("DependencyGraphPanel", () => {
         error={null}
         selectedPath="src/index.ts"
         onSelectFile={onSelectFile}
-        onRefresh={vi.fn()}
       />,
     );
 

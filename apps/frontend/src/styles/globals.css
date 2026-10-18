@@ -125,3 +125,40 @@
     @apply bg-background text-foreground antialiased;
   }
 }
+
+@keyframes understanding-wave {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.65);
+    opacity: 0.25;
+  }
+  45% {
+    transform: translateY(-5px) scale(1);
+    opacity: 1;
+    background-color: #a78bfa;
+  }
+  70% {
+    background-color: #f1a6c6;
+  }
+}
+@keyframes understanding-glow {
+  0%,
+  100% {
+    transform: translateX(-20%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(20%) rotate(35deg);
+  }
+}
+.understanding-cell {
+  animation: understanding-wave 2.1s ease-in-out infinite;
+}
+.understanding-glow {
+  animation: understanding-glow 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .understanding-cell,
+  .understanding-glow {
+    animation: none;
+  }
+}

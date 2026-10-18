@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Loader2 } from "lucide-react";
+import { UnderstandingLoader } from "@/components/ui/understanding-loader";
 
 import { PageHeader } from "@/components/PageHeader";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
@@ -13,7 +13,7 @@ export function RepositoriesPage() {
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <PageHeader
         title="Repositories"
-        description="Connect a GitHub repository, then explore its structure and diagrams."
+        description="Choose a project for your interview story, file explanations, and interactive connection map."
       />
 
       <RequireAuth>
@@ -76,10 +76,5 @@ function RepositoriesContent() {
 }
 
 function Loading({ label }: { label: string }) {
-  return (
-    <p className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Loader2 className="size-4 animate-spin" />
-      {label}
-    </p>
-  );
+  return <UnderstandingLoader compact label={label} />;
 }

@@ -1,22 +1,25 @@
+import { Compass, FileCode2, GraduationCap, Waypoints } from "lucide-react";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-import { Tabs } from "@/components/ui/tabs";
-import { ArchitecturePanel } from "@/features/analysis/components/ArchitecturePanel";
 import { FileAnalysisView } from "@/features/analysis/components/FileAnalysisView";
-import { useArchitecture } from "@/features/analysis/hooks/useArchitecture";
 import { FileTreePanel } from "@/features/explorer/components/FileTreePanel";
 import { useFileTree } from "@/features/explorer/hooks/useFileTree";
 import { buildFileTree } from "@/features/explorer/lib/buildFileTree";
+import { ProductMap } from "@/features/insights/components/ProductMap";
+import { ProjectTour } from "@/features/insights/components/ProjectTour";
+import { InterviewPreparation } from "@/features/insights/components/InterviewPreparation";
+import { useRepositoryPreparation } from "@/features/insights/hooks/useRepositoryPreparation";
 import { DependencyGraphPanel } from "@/features/visualization/components/DependencyGraphPanel";
-import { useDependencyGraph } from "@/features/visualization/hooks/useDependencyGraph";
+import { cn } from "@/lib/utils";
 
-type ExplorerView = "code" | "dependencies" | "architecture";
+type ExplorerView = "interview" | "tour" | "map" | "explore";
 
 const VIEWS = [
-  { id: "code", label: "Explain" },
-  { id: "dependencies", label: "Dependencies" },
-  { id: "architecture", label: "Architecture" },
+  { id: "interview", label: "Quick interview preparation", icon: GraduationCap },
+  { id: "tour", label: "Project tour", icon: Compass },
+  { id: "map", label: "How it works", icon: Waypoints },
+  { id: "explore", label: "Explore files", icon: FileCode2 },
 ] as const;
 
 interface RepositoryExplorerProps {
@@ -26,7 +29,7 @@ interface RepositoryExplorerProps {
 
 /**
  * The core exploration surface: a file tree on the left and a tabbed workspace
- * on the right (annotated walkthrough, dependency view, architecture map).
+ * on the right (tour, product map, and file exploration).
  * The selected file and active tab live in the URL so views are shareable.
  */
 export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
@@ -34,13 +37,12 @@ export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
 
   const selectedPath = searchParams.get("path") ?? "";
   const viewParam = searchParams.get("view");
-  const view: ExplorerView = viewParam === "dependencies" || viewParam === "architecture" ? viewParam : "code";
+  const view: ExplorerView =
+    viewParam === "map" || viewParam === "explore" || viewParam === "tour" ? viewParam : "interview";
 
-  const tree = useFileTree(owner, name);
-  // Both heavy panels are loaded up front (and memoized) so switching tabs is
-  // instant and never re-runs the graph build or the model.
-  const dependencies = useDependencyGraph(owner, name);
-  const architecture = useArchitecture(owner, name);
+  // Repository-wide analysis begins immediately and is reused by every view.
+  const preparation = useRepositoryPreparation(owner, name);
+  const tree = useFileTree(owner, name, preparation.status !== "loading");
 
   const nodes = useMemo(() => (tree.data ? buildFileTree(tree.data) : []), [tree.data]);
 
@@ -63,39 +65,100 @@ export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <div className="grid gap-5 rounded-[2rem] border border-[#e7eae8] bg-[#f6f7f5] p-3 shadow-[0_24px_70px_-55px_rgba(15,27,25,.4)] sm:p-4 lg:grid-cols-[270px_minmax(0,1fr)] dark:border-white/10 dark:bg-[#1b2020]">
       <aside className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-auto">
         <FileTreePanel
           nodes={nodes}
           status={tree.status}
           error={tree.error}
           selectedPath={selectedPath}
-          onSelect={(path) => updateParams({ path })}
+          onSelect={(path) => updateParams({ path, view: view === "map" || view === "interview" ? view : "explore" })}
         />
       </aside>
 
-      <section className="flex min-w-0 flex-col gap-4">
-        <Tabs items={VIEWS} value={view} onChange={(next) => updateParams({ view: next })} />
+      <section className="flex min-w-0 flex-col gap-5 rounded-[1.6rem] bg-white p-4 sm:p-6 dark:bg-[#202525]">
+        <nav
+          role="tablist"
+          aria-label="Repository views"
+          className="flex w-fit max-w-full flex-wrap gap-1 rounded-full bg-[#f0f1ef] p-1 dark:bg-white/10"
+        >
+          {VIEWS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={view === id}
+              onClick={() => updateParams({ view: id })}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600",
+                view === id
+                  ? id === "interview"
+                    ? "bg-[#d8f596] text-[#25362b] shadow-sm"
+                    : "bg-[#242b2b] text-white shadow-sm dark:bg-[#dafa9b] dark:text-[#1e2a24]"
+                  : id === "interview"
+                    ? "bg-[#e5f4ca] text-[#304e34] dark:bg-lime-900/30 dark:text-lime-200"
+                    : "text-[#626b68] hover:bg-white hover:text-[#242b2b] dark:text-white/65 dark:hover:bg-white/10 dark:hover:text-white",
+              )}
+            >
+              <Icon className="size-4" /> {label}
+            </button>
+          ))}
+        </nav>
 
-        {view === "code" ? <FileAnalysisView owner={owner} name={name} path={selectedPath} /> : null}
-
-        {view === "dependencies" ? (
-          <DependencyGraphPanel
-            graph={dependencies.data}
-            status={dependencies.status}
-            error={dependencies.error}
+        {view === "interview" ? (
+          <InterviewPreparation
+            owner={owner}
+            name={name}
+            insights={preparation.data?.insights ?? null}
+            graph={preparation.data?.graph ?? null}
+            tree={tree.data ?? []}
             selectedPath={selectedPath}
-            onSelectFile={(path) => updateParams({ path })}
-            onRefresh={dependencies.rebuild}
+            status={preparation.status}
+            error={preparation.error}
+            onSelectFile={(path) => updateParams({ path, view: "interview" })}
+            onExploreFile={(path) => updateParams({ path, view: "explore" })}
           />
         ) : null}
 
-        {view === "architecture" ? (
-          <ArchitecturePanel
-            analysis={architecture.data}
-            status={architecture.status}
-            error={architecture.error}
-            onRegenerate={architecture.regenerate}
+        {view === "tour" ? (
+          <ProjectTour
+            insights={preparation.data?.insights ?? null}
+            status={preparation.status}
+            error={preparation.error}
+            onSelectFile={(path) => updateParams({ path, view: "explore" })}
+            onShowMap={() => updateParams({ view: "map" })}
+          />
+        ) : null}
+
+        {view === "map" ? (
+          <ProductMap
+            owner={owner}
+            name={name}
+            filePaths={tree.data?.filter((entry) => entry.type === "blob").map((entry) => entry.path) ?? []}
+            insights={preparation.data?.insights ?? null}
+            graph={preparation.data?.graph ?? null}
+            selectedPath={selectedPath}
+            status={preparation.status}
+            error={preparation.error}
+            onSelectFile={(path) => updateParams({ path, view: "explore" })}
+            onFocusFile={(path) => updateParams({ path, view: "map" })}
+          />
+        ) : null}
+
+        {view === "explore" ? (
+          <FileAnalysisView
+            owner={owner}
+            name={name}
+            path={selectedPath}
+            context={
+              <DependencyGraphPanel
+                graph={preparation.data?.graph ?? null}
+                status={preparation.status}
+                error={preparation.error}
+                selectedPath={selectedPath}
+                onSelectFile={(path) => updateParams({ path, view: "explore" })}
+              />
+            }
           />
         ) : null}
       </section>
