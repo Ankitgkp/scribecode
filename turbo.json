@@ -6,9 +6,23 @@
     "PORT",
     "DATABASE_URL",
     "CORS_ORIGIN",
+    "FRONTEND_URL",
+    "SESSION_COOKIE_NAME",
+    "SESSION_TTL_HOURS",
     "LOG_LEVEL",
     "APP_VERSION",
-    "BACKEND_ORIGIN"
+    "BACKEND_ORIGIN",
+    "GITHUB_CLIENT_ID",
+    "GITHUB_CLIENT_SECRET",
+    "GITHUB_OAUTH_CALLBACK_URL",
+    "GITHUB_SCOPES",
+    "LLM_PROVIDER",
+    "LLM_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "LLM_BASE_URL",
+    "LLM_MODEL",
+    "LLM_MAX_TOKENS",
+    "LLM_JSON_MODE"
   ],
   "tasks": {
     "build": {
@@ -20,6 +34,9 @@
       "cache": false
     },
     "db:migrate": {
+      "cache": false
+    },
+    "db:deploy": {
       "cache": false
     },
     "db:push": {

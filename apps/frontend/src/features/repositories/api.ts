@@ -26,6 +26,12 @@ export function connectRepository(input: { owner: string; name: string }): Promi
     .then((payload) => payload.repository);
 }
 
+export function openRepository(input: { owner: string; name: string }): Promise<ConnectedRepository> {
+  return apiClient
+    .post<{ repository: ConnectedRepository }>("/repositories/open", input)
+    .then((payload) => payload.repository);
+}
+
 export function syncRepository(owner: string, name: string): Promise<{ fileCount: number }> {
   return apiClient.post<{ fileCount: number }>(`/repositories/${repoPath(owner, name)}/sync`);
 }

@@ -1,12 +1,11 @@
 import { createServer } from "node:http";
 
-import { createApp } from "@/app";
-import { env } from "@/config/env";
-import { logger } from "@/config/logger";
-import { disconnectPrisma } from "@/lib/prisma";
+import app from "../src/handler";
+import { env } from "../src/config/env";
+import { logger } from "../src/config/logger";
+import { disconnectPrisma } from "../src/lib/prisma";
 
 async function start(): Promise<void> {
-  const app = createApp();
   const server = createServer(app);
 
   await new Promise<void>((resolve) => {
@@ -18,9 +17,7 @@ async function start(): Promise<void> {
   let shuttingDown = false;
 
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
-    if (shuttingDown) {
-      return;
-    }
+    if (shuttingDown) return;
     shuttingDown = true;
     logger.info({ signal }, "Shutdown signal received, closing server");
 
@@ -31,9 +28,7 @@ async function start(): Promise<void> {
     forceExit.unref();
 
     server.close(async (closeError) => {
-      if (closeError) {
-        logger.error({ err: closeError }, "Error while closing the HTTP server");
-      }
+      if (closeError) logger.error({ err: closeError }, "Error while closing the HTTP server");
 
       try {
         await disconnectPrisma();

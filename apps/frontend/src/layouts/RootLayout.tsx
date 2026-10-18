@@ -3,7 +3,6 @@ import { Link, Outlet, useLocation, useMatch, useSearchParams } from "react-rout
 
 import { AppHeader } from "@/components/AppHeader";
 import { APP_NAME } from "@/config/app";
-import { useSession } from "@/features/auth/session-context";
 import { syncRepository } from "@/features/repositories/api";
 import { useRepository } from "@/features/repositories/hooks/useRepository";
 import { RepositoryWorkspaceContext } from "@/features/repositories/repository-workspace-context";
@@ -13,10 +12,9 @@ import { cn } from "@/lib/utils";
 export function RootLayout() {
   const repository = useMatch("/repositories/:owner/:name");
   const home = useLocation().pathname === "/";
-  const { status } = useSession();
   const [params] = useSearchParams();
   const focus =
-    status === "authenticated" && Boolean(repository) && !["tour", "map", "explore"].includes(params.get("view") ?? "");
+    Boolean(repository) && !["tour", "map", "explore"].includes(params.get("view") ?? "");
   const shell = (
     <div
       className={cn("flex flex-col bg-background text-foreground", focus ? "h-dvh overflow-hidden" : "min-h-screen")}
@@ -45,7 +43,7 @@ export function RootLayout() {
                 {APP_NAME}
               </Link>
               <p className="mt-2 max-w-sm text-xs leading-relaxed text-muted-foreground">
-                Understand unfamiliar GitHub repositories, one connection at a time.
+                Understand unfamiliar GitHub repositories, one project at a time.
               </p>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
@@ -65,7 +63,7 @@ export function RootLayout() {
     </div>
   );
 
-  if (repository && status === "authenticated") {
+  if (repository) {
     const { owner = "", name = "" } = repository.params;
     return (
       <RepositoryWorkspaceProvider key={owner + "/" + name} owner={owner} name={name}>

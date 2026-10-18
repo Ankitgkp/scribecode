@@ -37,6 +37,7 @@ describe("landing page", () => {
         .some((link) => link.getAttribute("href") === "/api/v1/auth/github"),
     ).toBe(true);
     expect(screen.getByLabelText("Personal access token")).toBeInTheDocument();
+    expect(screen.getByLabelText("Or paste a public repo")).toBeInTheDocument();
   });
 
   it("takes a signed-in visitor to their repositories", async () => {
@@ -49,6 +50,7 @@ describe("landing page", () => {
     expect(await screen.findByRole("link", { name: /Open workspace/i })).toHaveAttribute("href", "/repositories");
     expect(screen.getByRole("link", { name: /Choose a repository/i })).toHaveAttribute("href", "/repositories");
     expect(screen.queryByLabelText("Personal access token")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Or paste a public repo")).toBeInTheDocument();
   });
 
   it("does not show an active connection action while the session loads", () => {

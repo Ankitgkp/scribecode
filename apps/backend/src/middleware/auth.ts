@@ -52,7 +52,7 @@ export const optionalAuth: RequestHandler = async (req, _res, next) => {
  * throwing a typed error if the context is somehow missing.
  */
 export function authUserId(req: Parameters<RequestHandler>[0]): string {
-  const userId = req.auth?.user.id;
+  const userId = req.repositoryUserId ?? req.auth?.user.id;
 
   if (!userId) {
     throw new AppError("Authentication required", { statusCode: 401, code: "UNAUTHENTICATED" });

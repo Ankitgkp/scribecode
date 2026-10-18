@@ -7,6 +7,7 @@ import { AvailableRepositoryList } from "@/features/repositories/components/Avai
 import { RepositoryCard } from "@/features/repositories/components/RepositoryCard";
 import { useAvailableRepositories } from "@/features/repositories/hooks/useAvailableRepositories";
 import { useConnectedRepositories } from "@/features/repositories/hooks/useConnectedRepositories";
+import { RepositoryUrlInput } from "@/features/repositories/components/RepositoryUrlInput";
 
 export function RepositoriesPage() {
   return (
@@ -15,6 +16,8 @@ export function RepositoriesPage() {
         title="Repositories"
         description="Choose a project for your interview story, file explanations, and interactive connection map."
       />
+
+      <RepositoryUrlInput />
 
       <RequireAuth>
         <RepositoriesContent />

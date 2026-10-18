@@ -52,7 +52,7 @@ export function AppHeader() {
   const home = useLocation().pathname === "/";
   const workspace = useRepositoryWorkspace();
   const activeRepository =
-    status === "authenticated" && workspace?.repository.status === "success" ? workspace.repository.data : null;
+    workspace?.repository.status === "success" ? workspace.repository.data : null;
 
   const items = [
     {

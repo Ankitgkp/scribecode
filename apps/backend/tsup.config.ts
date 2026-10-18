@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: ["src/handler.ts", "scripts/start-server.ts"],
   outDir: "dist",
   format: ["esm"],
   target: "node22",

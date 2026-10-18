@@ -23,6 +23,7 @@ import { githubOAuthUrl } from "@/features/auth/api";
 import { useSession } from "@/features/auth/session-context";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { HeroGradient } from "@/components/HeroGradient";
+import { RepositoryUrlInput } from "@/features/repositories/components/RepositoryUrlInput";
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   invalid_callback: "GitHub returned an unexpected response. Please try connecting again.",
@@ -34,8 +35,8 @@ const steps = [
   {
     number: "01",
     icon: GitBranch,
-    title: "Connect a repository",
-    detail: "Choose a GitHub project you want to understand.",
+    title: "Open a repository",
+    detail: "Paste a public GitHub URL or connect a private project.",
   },
   {
     number: "02",
@@ -65,7 +66,7 @@ export function HomePage() {
         >
           <HeroGradient />
         </div>
-        <div className="relative z-10 max-w-5xl">
+        <div className="relative z-10">
           <p className="landing-kicker">
             <span className="size-1.5 rounded-full bg-[#c8f39a]" /> YOUR CODEBASE, MADE CLEAR
           </p>
@@ -74,17 +75,20 @@ export function HomePage() {
             <br />
             <span className="text-white/75">behind the code.</span>
           </h1>
-          <div className="mt-10 flex max-w-3xl flex-col gap-8 md:mt-12 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-lg text-base leading-relaxed text-white/80 sm:text-lg">
-              Turn an unfamiliar GitHub repository into a clear picture of its files, architecture, and how everything
-              connects.
-            </p>
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
-              <PrimaryAction status={status} label={status === "authenticated" ? "Open workspace" : "Connect GitHub"} />
-              <a href="#features" className="landing-text-link">
-                Explore the product <ArrowDown className="size-4" />
-              </a>
+          <div className="mt-10 grid w-full gap-10 md:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-end lg:gap-12">
+            <div>
+              <p className="max-w-lg text-base leading-relaxed text-white/80 sm:text-lg">
+                Turn an unfamiliar GitHub repository into a clear picture of its files, architecture, and how everything
+                connects.
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <PrimaryAction status={status} label={status === "authenticated" ? "Open workspace" : "Connect GitHub"} />
+                <a href="#features" className="landing-text-link">
+                  Explore the product <ArrowDown className="size-4" />
+                </a>
+              </div>
             </div>
+            <RepositoryUrlInput variant="hero" />
           </div>
           {status === "authenticated" && user ? (
             <p className="mt-7 text-sm text-white/40">Welcome back, {user.name ?? user.login}.</p>
@@ -200,7 +204,7 @@ export function HomePage() {
               <span className="text-white/40">your next repo.</span>
             </h2>
             <p className="mt-7 max-w-md text-base leading-relaxed text-white/50">
-              Connect GitHub, pick a repository, and start exploring its story.
+              Paste a public repository URL to begin, or connect GitHub for private projects.
             </p>
             {status === "authenticated" ? (
               <div className="mt-8">

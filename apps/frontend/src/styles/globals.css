@@ -391,52 +391,115 @@ html:not(.dark) .landing-primary {
 @keyframes understanding-drift {
   0%,
   100% {
-    transform: translate(-10%, 5%) scale(1);
-    background-color: #c4d7d0;
+    transform: translate3d(-4%, 3%, 0) scale(1);
   }
-  40% {
-    transform: translate(30%, -15%) scale(1.25);
-    background-color: #d0cbdc;
-  }
-  75% {
-    transform: translate(5%, 20%) scale(1.1);
-    background-color: #dfd1cc;
+  50% {
+    transform: translate3d(8%, -5%, 0) scale(1.12);
   }
 }
-.understanding-wash {
-  background: color-mix(in srgb, var(--background) 88%, #c9d7d0);
+@keyframes understanding-line-drift {
+  0%,
+  100% { transform: translate3d(-2%, 1%, 0); }
+  50% { transform: translate3d(2%, -2%, 0); }
+}
+.understanding-screen {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f1f5f1;
+  color: #435a4b;
+}
+.understanding-atmosphere {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
 }
 .understanding-cloud {
   position: absolute;
-  width: 65%;
-  height: 160%;
+  width: 65vw;
+  height: 65vw;
+  min-width: 520px;
+  min-height: 520px;
   border-radius: 50%;
-  filter: blur(36px);
-  opacity: 0.5;
-  background-color: #c4d7d0;
-  animation: understanding-drift 10s ease-in-out infinite;
+  filter: blur(110px);
+  opacity: 0.42;
+  animation: understanding-drift 18s ease-in-out infinite;
 }
 .understanding-cloud-a {
-  left: -15%;
-  top: -40%;
+  left: -23%;
+  top: -48%;
+  background: #c6dcd0;
 }
 .understanding-cloud-b {
-  right: -10%;
-  top: -10%;
-  animation-delay: -4s;
+  right: -20%;
+  top: -26%;
+  animation-delay: -7s;
   animation-direction: reverse;
-  background-color: #d0cbdc;
+  background: #d5d0df;
 }
 .understanding-cloud-c {
-  left: 30%;
-  bottom: -100%;
-  animation-delay: -7s;
-  opacity: 0.35;
-  background-color: #dfd1cc;
+  left: 23%;
+  bottom: -63%;
+  animation-delay: -11s;
+  opacity: 0.34;
+  background: #e1d5cf;
 }
-.dark .understanding-cloud {
-  opacity: 0.14;
+.understanding-lines {
+  position: absolute;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  fill: none;
+  stroke: #8cae9d;
+  stroke-width: 2;
+  opacity: 0.2;
+  filter: blur(5px);
+  animation: understanding-line-drift 24s ease-in-out infinite;
 }
+.understanding-lines path:nth-child(2) { stroke: #aa9bbb; }
+.understanding-lines path:nth-child(3) { stroke: #b5a89a; }
+.understanding-label {
+  position: relative;
+  z-index: 1;
+  padding: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  text-align: center;
+}
+.understanding-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.5rem 0.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+.understanding-compact-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border-radius: 50%;
+  background: #89aa94;
+  box-shadow: 0 0 0 4px rgb(137 170 148 / 12%);
+  animation: understanding-pulse 2.2s ease-in-out infinite;
+}
+@keyframes understanding-pulse {
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+.dark .understanding-screen {
+  background: #111715;
+  color: #c0d0c5;
+}
+.dark .understanding-cloud { opacity: 0.14; }
+.dark .understanding-lines { opacity: 0.14; }
+.dark .understanding-compact-dot { background: #9fbaa6; }
 @keyframes story-enter {
   from {
     opacity: 0;
@@ -456,6 +519,8 @@ html:not(.dark) .landing-primary {
 }
 @media (prefers-reduced-motion: reduce) {
   .understanding-cloud,
+  .understanding-lines,
+  .understanding-compact-dot,
   .story-enter,
   .animated-beam-pulse {
     animation: none;

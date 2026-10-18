@@ -10,8 +10,14 @@ import type {
   RepositoryParams,
 } from "@/modules/repositories/repositories.schema";
 import * as repositoriesService from "@/modules/repositories/repositories.service";
+import { openRepository } from "@/modules/repositories/public-repositories";
 
 export const repositoriesController = {
+  async open(req: Request, res: Response): Promise<void> {
+    const { owner, name } = getValidated<ConnectRepositoryInput>(res, "body");
+    const repository = await openRepository(owner, name, req.auth?.user.id);
+    res.status(200).json(success({ repository: toRepositoryDto(repository) }));
+  },
   /** Repositories the connected GitHub account can access. */
   async listAvailable(req: Request, res: Response): Promise<void> {
     const { page, perPage } = getValidated<ListGitHubRepositoriesQuery>(res, "query");

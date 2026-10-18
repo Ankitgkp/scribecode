@@ -94,6 +94,10 @@ Each backend feature module defines its routes independently and is mounted in
 - **Node.js 24+** (required to run the backend)
 - PostgreSQL (needed for migrations and any data-backed endpoint)
 
+## Deploy on Vercel
+
+See [the Vercel deployment guide](docs/vercel-deployment.md) for the single-project Services setup, database migrations, OAuth callback, and environment variables.
+
 ## Getting started
 
 ```sh

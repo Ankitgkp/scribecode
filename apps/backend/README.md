@@ -6,7 +6,7 @@ Express 5 API written in TypeScript, running on **Node.js** (package management 
 
 ```
 src/
-  index.ts                  # entrypoint: server bootstrap + graceful shutdown
+  handler.ts                # Express app export
   app.ts                    # Express app assembly (middleware + routes)
   config/                   # validated env (zod) and structured logger (pino)
   lib/                      # infrastructure (Prisma client)
@@ -17,6 +17,8 @@ src/
   types/                    # shared API types (response envelope)
 prisma/schema.prisma        # datasource + generator (no models yet)
 prisma.config.ts            # Prisma CLI configuration
+app.mjs                     # Vercel entrypoint for the bundled app
+scripts/start-server.ts     # local and self-hosted server bootstrap
 ```
 
 Each feature is a self-contained module. Routes delegate to controllers (HTTP concerns), which
@@ -28,9 +30,11 @@ Run from the repository root or this directory:
 
 - `bun run dev` — generate the Prisma client and start `tsx watch` (http://localhost:4000)
 - `bun run build` — bundle to `dist/` with tsup
-- `bun run start` — run the built output with plain Node (`node dist/index.js`)
+- `bun run start` — run the built output with plain Node (`node dist/scripts/start-server.js`)
 - `bun run lint` / `bun run check-types` / `bun run test`
-- `bun run db:generate` / `db:migrate` / `db:push` / `db:studio`
+- `bun run db:generate` / `db:migrate` / `db:deploy` / `db:push` / `db:studio`
+
+For Vercel, see [the deployment guide](../../docs/vercel-deployment.md).
 
 ## Environment
 

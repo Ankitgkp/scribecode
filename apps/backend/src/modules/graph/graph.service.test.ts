@@ -5,7 +5,6 @@ const mocks = vi.hoisted(() => ({
   analysisFindFirst: vi.fn(),
   analysisCreate: vi.fn(),
   getConnectedRepository: vi.fn(),
-  getGitHubAccessToken: vi.fn(),
   getFileContent: vi.fn(),
 }));
 
@@ -16,13 +15,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/github/account", () => ({
-  getGitHubAccessToken: mocks.getGitHubAccessToken,
-}));
-
-vi.mock("@/lib/github/client", () => ({
-  githubClient: { getFileContent: mocks.getFileContent },
-}));
+vi.mock("@/modules/files/files.service", () => ({ getFileContent: mocks.getFileContent }));
 
 vi.mock("@/modules/repositories/repositories.service", () => ({
   getConnectedRepository: mocks.getConnectedRepository,
@@ -40,7 +33,6 @@ describe("buildDependencyGraph", () => {
     vi.clearAllMocks();
 
     mocks.getConnectedRepository.mockResolvedValue({ id: "repo-1", defaultBranch: "main" });
-    mocks.getGitHubAccessToken.mockResolvedValue("token");
     mocks.analysisFindFirst.mockResolvedValue(null);
     mocks.findMany.mockResolvedValue([
       { path: "README.md", type: "blob" },
@@ -48,7 +40,7 @@ describe("buildDependencyGraph", () => {
       { path: "src/index.ts", type: "blob" },
       { path: "src/utils/math.ts", type: "blob" },
     ]);
-    mocks.getFileContent.mockImplementation((_token, _owner, _repo, path: string) =>
+    mocks.getFileContent.mockImplementation((_user, _owner, _repo, path: string) =>
       Promise.resolve({
         path,
         sha: "sha",
@@ -104,7 +96,6 @@ describe("buildDependencyGraph", () => {
 
     expect(graph.nodes[0]?.id).toBe("src/index.ts");
     expect(mocks.getFileContent).not.toHaveBeenCalled();
-    expect(mocks.getGitHubAccessToken).not.toHaveBeenCalled();
     expect(mocks.analysisCreate).not.toHaveBeenCalled();
   });
 
@@ -115,5 +106,25 @@ describe("buildDependencyGraph", () => {
 
     expect(mocks.analysisFindFirst).not.toHaveBeenCalled();
     expect(mocks.getFileContent).toHaveBeenCalled();
+  });
+
+  it("keeps public preparation below the anonymous GitHub request limit", async () => {
+    mocks.findMany.mockResolvedValue(
+      Array.from({ length: 40 }, (_, index) => ({ path: `src/file-${index}.ts`, type: "blob" })),
+    );
+
+    await buildDependencyGraph("scribecode-public-repositories", "acme", "app", { limit: 60 });
+
+    expect(mocks.getFileContent).toHaveBeenCalledTimes(24);
+    expect(mocks.analysisCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ targetPath: "limit:24" }) }),
+    );
+  });
+
+  it("does not cache a graph when GitHub rejects a source fetch", async () => {
+    mocks.getFileContent.mockRejectedValue(new Error("rate limited"));
+
+    await expect(buildDependencyGraph("user-1", "acme", "app", { limit: 50 })).rejects.toThrow("rate limited");
+    expect(mocks.analysisCreate).not.toHaveBeenCalled();
   });
 });

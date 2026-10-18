@@ -1,10 +1,11 @@
 import { posix } from "node:path";
 
+import { AppError } from "@/errors/app-error";
 import { mapWithConcurrency } from "@/lib/async";
-import { getGitHubAccessToken } from "@/lib/github/account";
-import { githubClient } from "@/lib/github/client";
 import { fromJsonInput, toJsonInput } from "@/lib/json";
 import { prisma } from "@/lib/prisma";
+import { getFileContent } from "@/modules/files/files.service";
+import { PUBLIC_REPOSITORY_USER_ID } from "@/modules/repositories/public-repositories";
 import { getConnectedRepository } from "@/modules/repositories/repositories.service";
 import { withEdgeIds, type Graph, type GraphEdge, type GraphNode } from "@/types/graph";
 
@@ -27,6 +28,7 @@ const IMPORT_PATTERN =
   /(?:import\s+[^'"]*from\s*|import\s*\(\s*|import\s*|export\s+[^'"]*from\s*|require\s*\(\s*)['"]([^'"]+)['"]/g;
 
 const MAX_CONCURRENT_REQUESTS = 8;
+const MAX_PUBLIC_SOURCE_FILES = 24;
 
 const DEPENDENCY_GRAPH_KIND = "dependency-graph";
 
@@ -98,7 +100,10 @@ export async function buildDependencyGraph(
   options: BuildOptions,
 ): Promise<Graph> {
   const repository = await getConnectedRepository(userId, owner, name);
-  const cacheKey = `limit:${options.limit}`;
+  // Anonymous GitHub API access is shared by IP and has a small hourly limit.
+  // Leave room for the tree, chapters, and other repositories.
+  const limit = userId === PUBLIC_REPOSITORY_USER_ID ? Math.min(options.limit, MAX_PUBLIC_SOURCE_FILES) : options.limit;
+  const cacheKey = `limit:${limit}`;
 
   if (!options.refresh) {
     const cached = await prisma.analysis.findFirst({
@@ -111,8 +116,6 @@ export async function buildDependencyGraph(
     }
   }
 
-  const token = await getGitHubAccessToken(userId);
-
   const blobs = await prisma.repositoryFile.findMany({
     where: { repositoryId: repository.id, type: "blob" },
     orderBy: { path: "asc" },
@@ -122,16 +125,21 @@ export async function buildDependencyGraph(
   const sourcePaths = blobs
     .map((blob) => blob.path)
     .filter((path) => isSourceFile(path) && !isIgnored(path))
-    .slice(0, options.limit);
+    .slice(0, limit);
 
   const sourceSet = new Set(sourcePaths);
 
   const fetched = await mapWithConcurrency(sourcePaths, MAX_CONCURRENT_REQUESTS, async (path) => {
     try {
-      const file = await githubClient.getFileContent(token, owner, name, path, repository.defaultBranch);
+      const file = await getFileContent(userId, owner, name, path);
       return { path, content: file.content };
-    } catch {
-      return { path, content: "" };
+    } catch (error) {
+      // A stale or non-file tree entry can be skipped. Access and rate-limit
+      // failures must remain visible so we do not cache an empty graph.
+      if (error instanceof AppError && (error.statusCode === 400 || error.statusCode === 404)) {
+        return { path, content: "" };
+      }
+      throw error;
     }
   });
 

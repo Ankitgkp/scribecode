@@ -41,7 +41,7 @@ export interface ListRepositoriesOptions {
 }
 
 function createClient(token: string): Octokit {
-  return new Octokit({ auth: token });
+  return token ? new Octokit({ auth: token }) : new Octokit();
 }
 
 /**
@@ -50,6 +50,19 @@ function createClient(token: string): Octokit {
  */
 export function mapGitHubError(error: unknown, context: string): AppError {
   const status = (error as { status?: number }).status;
+  const githubError = error as { message?: string; response?: { headers?: Record<string, string> } };
+  const headers = githubError.response?.headers;
+  const rateLimited =
+    status === 429 ||
+    (status === 403 &&
+      (headers?.["x-ratelimit-remaining"] === "0" || /rate limit|secondary limit/i.test(githubError.message ?? "")));
+
+  if (rateLimited) {
+    return new AppError("GitHub's request limit was reached. Try again later or connect a GitHub account.", {
+      statusCode: 429,
+      code: "GITHUB_RATE_LIMITED",
+    });
+  }
 
   if (status === 401) {
     return new AppError(`GitHub authentication failed while ${context}`, {

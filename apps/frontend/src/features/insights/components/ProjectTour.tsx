@@ -36,7 +36,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
             </h2>
             {loading && !insights ? (
               <div className="mt-5">
-                <UnderstandingLoader compact label="Reading your project…" />
+                <UnderstandingLoader label="Reading your project…" />
               </div>
             ) : null}
             {error ? (

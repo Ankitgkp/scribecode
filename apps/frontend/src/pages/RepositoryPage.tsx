@@ -2,7 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RequireAuth } from "@/features/auth/components/RequireAuth";
+import { RepositoryUrlInput } from "@/features/repositories/components/RepositoryUrlInput";
 import { RepositoryExplorer } from "@/features/explorer/components/RepositoryExplorer";
 import { useRepositoryWorkspace } from "@/features/repositories/repository-workspace-context";
 import { cn } from "@/lib/utils";
@@ -10,11 +10,7 @@ import { cn } from "@/lib/utils";
 export function RepositoryPage() {
   const { owner = "", name = "" } = useParams();
 
-  return (
-    <RequireAuth>
-      <RepositoryView owner={owner} name={name} />
-    </RequireAuth>
-  );
+  return <RepositoryView owner={owner} name={name} />;
 }
 
 function RepositoryView({ owner, name }: { owner: string; name: string }) {
@@ -35,10 +31,11 @@ function RepositoryView({ owner, name }: { owner: string; name: string }) {
       {repository.status === "error" ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Repository not connected</CardTitle>
+            <CardTitle className="text-base">Repository unavailable</CardTitle>
             <CardDescription>{repository.error}</CardDescription>
           </CardHeader>
           <CardContent>
+            <RepositoryUrlInput />
             <Button asChild>
               <Link to="/repositories">Back to repositories</Link>
             </Button>
