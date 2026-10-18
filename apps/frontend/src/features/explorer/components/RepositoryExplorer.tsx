@@ -69,7 +69,7 @@ export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
       className={cn(
         view === "interview"
           ? "flex min-h-0 flex-1 flex-col"
-          : "grid gap-5 rounded-[2rem] border border-[#e7eae8] bg-[#f6f7f5] p-3 shadow-[0_24px_70px_-55px_rgba(15,27,25,.4)] sm:p-4 lg:grid-cols-[270px_minmax(0,1fr)] dark:border-white/10 dark:bg-[#1b2020]",
+          : "grid gap-5 rounded-2xl border border-[#e7eae8] bg-[#f6f7f5] p-3 shadow-[0_24px_70px_-55px_rgba(15,27,25,.4)] sm:p-4 lg:grid-cols-[270px_minmax(0,1fr)] dark:border-white/10 dark:bg-[#1b2020]",
       )}
     >
       {view !== "interview" ? (
@@ -86,16 +86,16 @@ export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
 
       <section
         className={cn(
-          "flex min-w-0 flex-col rounded-[1.6rem] bg-white dark:bg-[#202525]",
+          "flex min-w-0 flex-col rounded-xl bg-white dark:bg-[#202525]",
           view === "interview"
-            ? "min-h-0 flex-1 gap-3 overflow-hidden border border-[#e7eae8] p-3 sm:p-4 dark:border-white/10"
+            ? "mx-auto min-h-0 w-full max-w-[1440px] flex-1 gap-3 overflow-hidden border border-[#e7eae8] p-3 sm:p-4 dark:border-white/10"
             : "gap-5 p-4 sm:p-6",
         )}
       >
         <nav
           role="tablist"
           aria-label="Repository views"
-          className="flex w-fit max-w-full shrink-0 gap-1 overflow-x-auto rounded-full bg-[#f0f1ef] p-1 dark:bg-white/10"
+          className="flex w-fit max-w-full shrink-0 gap-1 overflow-x-auto rounded-lg bg-[#f0f1ef] p-1 dark:bg-white/10"
         >
           {VIEWS.map(({ id, label, icon: Icon }) => (
             <button
@@ -105,7 +105,7 @@ export function RepositoryExplorer({ owner, name }: RepositoryExplorerProps) {
               aria-selected={view === id}
               onClick={() => updateParams({ view: id })}
               className={cn(
-                "inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 sm:px-4 sm:text-sm",
+                "inline-flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 sm:px-4 sm:text-sm",
                 view === id
                   ? id === "interview"
                     ? "bg-[#d8f596] text-[#25362b] shadow-sm"

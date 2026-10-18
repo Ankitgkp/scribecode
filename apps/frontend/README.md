@@ -1,4 +1,4 @@
-# Frontend — ScribeCode
+# Frontend — Scribecode
 
 React + TypeScript (strict) single-page app built with Vite, Tailwind CSS v4 and React Router.
 

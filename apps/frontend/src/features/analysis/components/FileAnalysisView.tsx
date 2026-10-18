@@ -68,7 +68,7 @@ export function FileAnalysisView({ owner, name, path, context }: FileAnalysisVie
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="rounded-[1.75rem] border-[#e7eae8] bg-[#f1eef9] shadow-none dark:border-white/10 dark:bg-violet-950/35">
+      <Card className="rounded-2xl border-[#e7eae8] bg-[#f1eef9] shadow-none dark:border-white/10 dark:bg-violet-950/35">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <span className="grid size-9 place-items-center rounded-xl bg-white/70 text-violet-700 dark:bg-white/10 dark:text-violet-200">

@@ -12,7 +12,7 @@ export function UnderstandingLoader({
       role="status"
       aria-live="polite"
       className={cn(
-        "understanding-wash relative isolate flex items-center justify-center overflow-hidden rounded-2xl",
+        "understanding-wash relative isolate flex items-center justify-center overflow-hidden rounded-xl",
         compact ? "min-h-12 gap-3 px-4 py-3" : "min-h-36 px-6 py-8",
       )}
     >

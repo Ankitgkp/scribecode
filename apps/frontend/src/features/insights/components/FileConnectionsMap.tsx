@@ -85,13 +85,13 @@ export function FileConnectionsMap({
       }}
       onDrop={drop}
       className={cn(
-        "relative overflow-hidden rounded-[1.8rem] border bg-white shadow-[0_20px_50px_-38px_rgba(28,37,57,.35)] dark:bg-[#22252b]",
+        "relative overflow-hidden rounded-2xl border bg-white shadow-[0_20px_50px_-38px_rgba(28,37,57,.35)] dark:bg-[#22252b]",
         dragging ? "border-teal-500 ring-4 ring-teal-400/25" : "border-[#e1e4e5] dark:border-white/10",
       )}
     >
       {dragging ? (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-3xl bg-teal-100/90 backdrop-blur-sm dark:bg-teal-950/90">
-          <span className="flex items-center gap-3 rounded-3xl bg-white p-6 text-lg font-semibold text-teal-800 shadow-xl">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-teal-100/90 backdrop-blur-sm dark:bg-teal-950/90">
+          <span className="flex items-center gap-3 rounded-2xl bg-white p-6 text-lg font-semibold text-teal-800 shadow-xl dark:bg-[#dff5df] dark:text-[#183d2a]">
             <Upload className="size-6" /> Drop to follow this file’s connections
           </span>
         </div>
@@ -117,7 +117,7 @@ export function FileConnectionsMap({
             className="h-10 w-full rounded-full border bg-[#f7f8f8] pr-4 pl-10 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:bg-white/5"
           />
           {query.trim() ? (
-            <div className="absolute top-12 right-0 left-0 z-20 max-h-60 overflow-auto rounded-2xl border bg-card p-1 shadow-xl">
+            <div className="absolute top-12 right-0 left-0 z-20 max-h-60 overflow-auto rounded-xl border bg-card p-1 shadow-xl">
               {searchResults.length ? (
                 searchResults.map((node) => (
                   <button
@@ -206,8 +206,8 @@ export function FileConnectionsMap({
                 onFocus={focus}
               />
               <div className="relative z-10 order-first xl:order-none">
-                <div className="rounded-[1.8rem] bg-[#26352f] p-5 text-white shadow-[0_22px_50px_-20px_rgba(22,39,45,.6)]">
-                  <span className="grid size-11 place-items-center rounded-2xl bg-[#c9f4e7] text-[#143c37]">
+                <div className="rounded-2xl bg-[#26352f] p-5 text-white shadow-[0_22px_50px_-20px_rgba(22,39,45,.6)]">
+                  <span className="grid size-11 place-items-center rounded-xl bg-[#c9f4e7] text-[#143c37]">
                     <FileCode2 className="size-5" />
                   </span>
                   <p className="mt-5 text-xs font-semibold tracking-[.15em] text-[#b5decf] uppercase">You are here</p>
@@ -337,7 +337,7 @@ function ConnectionColumn({
               </>
             );
             const className = cn(
-              "block w-full rounded-2xl p-4 text-left text-[#2b3131] shadow-sm dark:text-white",
+              "block w-full rounded-xl p-4 text-left text-[#2b3131] shadow-sm dark:text-white",
               direction === "incoming"
                 ? "bg-[#f7d9e7] dark:bg-rose-900/50"
                 : external
@@ -364,7 +364,7 @@ function ConnectionColumn({
             );
           })
         ) : (
-          <p className="rounded-2xl border border-dashed bg-white/70 p-5 text-xs leading-relaxed text-muted-foreground dark:bg-white/5">
+          <p className="rounded-xl border border-dashed bg-white/70 p-5 text-xs leading-relaxed text-muted-foreground dark:bg-white/5">
             No direct {direction === "incoming" ? "importers" : "imports"} were found in the parsed files. This can be
             normal for entry points, configuration, or assets.
           </p>
@@ -425,7 +425,7 @@ function ExtraConnections({
   onFocus: (path: string) => void;
 }) {
   return (
-    <section className="rounded-2xl bg-white/80 p-4 dark:bg-white/5">
+    <section className="rounded-xl bg-white/80 p-4 dark:bg-white/5">
       <h5 className="mb-2 text-xs font-semibold">{title}</h5>
       <div className="flex flex-wrap gap-2">
         {nodes.map((node) =>

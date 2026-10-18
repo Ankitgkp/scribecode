@@ -23,7 +23,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="relative overflow-hidden rounded-[2rem] bg-[#e6efed] p-6 text-[#1c2928] sm:p-8 lg:p-10 dark:bg-[#203630] dark:text-white">
+      <section className="relative overflow-hidden rounded-2xl bg-[#e6efed] p-6 text-[#1c2928] sm:p-8 lg:p-10 dark:bg-[#203630] dark:text-white">
         <div className="pointer-events-none absolute -top-24 right-[-4rem] size-72 rounded-full border-[35px] border-white/40 dark:border-white/5" />
         <div className="pointer-events-none absolute right-20 -bottom-36 size-72 rounded-full border-[42px] border-[#c5dfd9]/70 dark:border-emerald-500/10" />
         <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(250px,.85fr)]">
@@ -53,7 +53,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
               <button
                 type="button"
                 onClick={onShowMap}
-                className="inline-flex items-center gap-3 rounded-full bg-[#202c2b] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_-15px_rgba(11,35,30,.9)] transition hover:-translate-y-0.5 hover:bg-[#334844] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:bg-[#dcfa96] dark:text-[#16221c]"
+                className="inline-flex items-center gap-3 rounded-lg bg-[#202c2b] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_-15px_rgba(11,35,30,.9)] transition hover:-translate-y-0.5 hover:bg-[#334844] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:bg-[#dcfa96] dark:text-[#16221c]"
               >
                 Explore connections <ArrowUpRight className="size-4" />
               </button>
@@ -61,17 +61,17 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
           </div>
 
           <div aria-hidden="true" className="relative hidden min-h-[260px] lg:block">
-            <div className="absolute top-2 right-16 left-4 h-28 rotate-[-8deg] rounded-[1.7rem] bg-[#f9dded] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-rose-900/70">
+            <div className="absolute top-2 right-16 left-4 h-28 rotate-[-8deg] rounded-xl bg-[#f9dded] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-rose-900/70">
               <Blocks className="mb-4 size-6" />
               <span className="block truncate text-lg font-semibold">
                 {insights?.modules[0]?.name ?? "Your features"}
               </span>
             </div>
-            <div className="absolute top-20 right-0 left-20 h-28 rotate-[7deg] rounded-[1.7rem] bg-[#e4dbf8] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-violet-900/70">
+            <div className="absolute top-20 right-0 left-20 h-28 rotate-[7deg] rounded-xl bg-[#e4dbf8] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-violet-900/70">
               <GitBranch className="mb-4 size-6" />
               <span className="block truncate text-lg font-semibold">{insights?.modules[1]?.name ?? "The logic"}</span>
             </div>
-            <div className="absolute top-40 right-12 left-8 h-28 rotate-[-3deg] rounded-[1.7rem] bg-[#ffebad] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-amber-900/70">
+            <div className="absolute top-40 right-12 left-8 h-28 rotate-[-3deg] rounded-xl bg-[#ffebad] p-5 shadow-[0_15px_28px_-18px_rgba(43,50,48,.35)] dark:bg-amber-900/70">
               <FileCode2 className="mb-4 size-6" />
               <span className="block truncate text-lg font-semibold">{insights?.modules[2]?.name ?? "Your files"}</span>
             </div>
@@ -82,7 +82,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
       {insights ? (
         <>
           {insights.limitedAnalysis ? (
-            <p className="rounded-2xl bg-[#fff0ce] px-5 py-3 text-sm dark:bg-amber-900/30">
+            <p className="rounded-xl bg-[#fff0ce] px-5 py-3 text-sm dark:bg-amber-900/30">
               This tour uses the file structure. Direct import connections are supported for JavaScript and TypeScript
               files.
             </p>
@@ -129,7 +129,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
                       type="button"
                       onClick={() => onSelectFile(file.path)}
                       className={cn(
-                        "group flex h-full min-h-48 w-full flex-col justify-between rounded-[1.6rem] p-5 text-left transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600",
+                        "group flex h-full min-h-48 w-full flex-col justify-between rounded-xl p-5 text-left transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600",
                         TONES[index % TONES.length],
                       )}
                     >
@@ -151,13 +151,13 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
                 ))}
               </ul>
             ) : (
-              <p className="rounded-2xl bg-muted px-5 py-8 text-sm text-muted-foreground">
+              <p className="rounded-xl bg-muted px-5 py-8 text-sm text-muted-foreground">
                 No starting files were identified yet. Browse the tree to explore the project.
               </p>
             )}
           </section>
 
-          <section className="grid gap-4 rounded-[1.75rem] bg-[#252b2b] p-6 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
+          <section className="grid gap-4 rounded-2xl bg-[#252b2b] p-6 text-white sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
             <div>
               <span className="text-xs font-semibold tracking-[.14em] text-[#c2e8d9] uppercase">
                 Next, see how it works
@@ -170,7 +170,7 @@ export function ProjectTour({ insights, status, error, onSelectFile, onShowMap }
             <button
               type="button"
               onClick={onShowMap}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#ddf88e] px-5 py-3 text-sm font-semibold text-[#243027] hover:bg-[#d0ed79]"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ddf88e] px-5 py-3 text-sm font-semibold text-[#243027] hover:bg-[#d0ed79]"
             >
               Open the map <ArrowRight className="size-4" />
             </button>
@@ -209,7 +209,7 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <div className={cn("rounded-[1.55rem] p-5", tone)}>
+    <div className={cn("rounded-xl p-5", tone)}>
       <span className="text-3xl font-semibold tracking-tight">{value}</span>
       <span className="ml-2 text-sm font-semibold">{label}</span>
       <p className="mt-2 text-sm text-muted-foreground">{description}</p>

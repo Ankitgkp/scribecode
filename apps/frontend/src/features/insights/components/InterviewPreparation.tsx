@@ -91,7 +91,7 @@ export function InterviewPreparation({
     );
   if (error && !insights)
     return (
-      <p role="alert" className="rounded-3xl bg-rose-50 p-6 text-destructive">
+      <p role="alert" className="rounded-2xl bg-rose-50 p-6 text-destructive">
         {error} Use Sync project to try again.
       </p>
     );
@@ -99,13 +99,13 @@ export function InterviewPreparation({
 
   if (!stops.length)
     return (
-      <div className="flex flex-1 items-center justify-center rounded-3xl bg-muted p-8 text-center text-sm text-muted-foreground">
+      <div className="flex flex-1 items-center justify-center rounded-2xl bg-muted p-8 text-center text-sm text-muted-foreground">
         No files to explore yet. Sync a repository to begin.
       </div>
     );
   if (complete)
     return (
-      <section className="flex min-h-0 flex-1 flex-col items-center justify-center gap-5 rounded-3xl bg-[#f1f0e6] p-6 text-center dark:bg-amber-950/20">
+      <section className="flex min-h-0 flex-1 flex-col items-center justify-center gap-5 rounded-2xl bg-[#f1f0e6] p-6 text-center dark:bg-amber-950/20">
         <Trophy className="size-10 text-amber-600" />
         <h2 className="text-2xl font-semibold">That’s your project story.</h2>
         <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
@@ -115,7 +115,7 @@ export function InterviewPreparation({
         <button
           type="button"
           onClick={() => go(0)}
-          className="rounded-full bg-[#293d32] px-5 py-3 text-sm font-semibold text-white"
+          className="rounded-lg bg-[#293d32] px-5 py-3 text-sm font-semibold text-white"
         >
           Revisit the story
         </button>
@@ -124,7 +124,7 @@ export function InterviewPreparation({
 
   if (!active || !stop)
     return (
-      <section className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-[1.5rem] bg-[#eef3ec] px-6 py-8 text-center dark:bg-[#25322b]">
+      <section className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-xl bg-[#eef3ec] px-6 py-8 text-center dark:bg-[#25322b]">
         <span className="mb-5 flex items-center gap-2 rounded-full bg-white/70 px-3 py-2 text-xs font-semibold dark:bg-white/10">
           <GraduationCap className="size-4" /> INTERVIEW STORY
         </span>
@@ -140,7 +140,7 @@ export function InterviewPreparation({
         <button
           type="button"
           onClick={() => go(0)}
-          className="mt-7 inline-flex items-center gap-3 rounded-full bg-[#2a3e32] px-6 py-3 text-sm font-semibold text-white"
+          className="mt-7 inline-flex items-center gap-3 rounded-lg bg-[#2a3e32] px-6 py-3 text-sm font-semibold text-white"
         >
           <Play className="size-4" />
           Start my story
@@ -156,9 +156,9 @@ export function InterviewPreparation({
       ref={stage}
       tabIndex={0}
       aria-label="Interview story slides"
-      className="flex min-h-0 flex-1 flex-col gap-3 outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+      className="flex min-h-0 flex-1 flex-col gap-4 outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
     >
-      <header className="flex shrink-0 items-center justify-between gap-3 px-1">
+      <header className="mx-auto flex w-full max-w-[1320px] shrink-0 items-center justify-between gap-3 px-1">
         <div className="min-w-0">
           <p className="truncate text-[10px] font-semibold tracking-widest text-teal-700 uppercase dark:text-teal-300">
             Chapter {index + 1} / {stops.length} · {stop.chapter}
@@ -184,7 +184,7 @@ export function InterviewPreparation({
         aria-valuemin={0}
         aria-valuemax={stops.length}
         aria-valuenow={index + 1}
-        className="h-1 shrink-0 overflow-hidden rounded-full bg-[#edf0eb] dark:bg-white/10"
+        className="mx-auto h-1 w-full max-w-[1320px] shrink-0 overflow-hidden rounded-full bg-[#edf0eb] dark:bg-white/10"
       >
         <div
           className="h-full rounded-full bg-[#9eb69e] transition-all duration-300 motion-reduce:transition-none"
@@ -202,12 +202,12 @@ export function InterviewPreparation({
         onSelectFile={(path) => go(stops.findIndex((item) => item.path === path))}
         onExploreFile={onExploreFile}
       />
-      <footer className="flex shrink-0 items-center justify-between gap-2 border-t pt-3">
+      <footer className="mx-auto flex w-full max-w-[1320px] shrink-0 items-center justify-between gap-2 border-t pt-3">
         <button
           type="button"
           disabled={index === 0}
           onClick={() => go(index - 1)}
-          className="inline-flex items-center gap-2 rounded-full border px-3 py-2.5 text-xs font-medium disabled:opacity-30 sm:px-4 sm:text-sm"
+          className="inline-flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium disabled:opacity-30 sm:px-4 sm:text-sm"
         >
           <ArrowLeft className="size-4" />
           <span className="hidden sm:inline">Previous</span>
@@ -232,7 +232,7 @@ export function InterviewPreparation({
         <button
           type="button"
           onClick={() => go(index + 1)}
-          className="inline-flex items-center gap-2 rounded-full bg-[#293e32] px-4 py-2.5 text-xs font-semibold text-white sm:px-5 sm:text-sm dark:bg-[#dce8d3] dark:text-[#273a2e]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#293e32] px-4 py-2.5 text-xs font-semibold text-white sm:px-5 sm:text-sm dark:bg-[#dce8d3] dark:text-[#273a2e]"
         >
           {index === stops.length - 1 ? "Finish story" : "Next chapter"}
           <ArrowRight className="size-4" />
@@ -284,8 +284,14 @@ function StorySlide({
 
   return (
     <>
-      <article className="story-enter grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1.15fr)_minmax(0,1fr)] overflow-hidden rounded-[1.4rem] border border-[#dfe5df] dark:border-white/10">
-        <section aria-label="Key code" className="flex min-h-0 flex-col bg-[#252e2a] text-[#e6eee7]">
+      <article
+        data-story-scroll
+        className="story-enter mx-auto grid min-h-0 min-w-0 w-full max-w-[1320px] flex-1 grid-cols-1 grid-rows-[minmax(260px,1fr)_minmax(260px,1fr)] gap-4 overflow-y-auto lg:max-h-[540px] lg:grid-cols-[minmax(0,1.1fr)_minmax(340px,.9fr)] lg:grid-rows-1 lg:overflow-visible"
+      >
+        <section
+          aria-label="Key code"
+          className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-[#344139] bg-[#252e2a] text-[#e6eee7]"
+        >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-2 text-[11px]">
             <span className="flex min-w-0 items-center gap-2">
               <Code2 className="size-3.5 shrink-0 text-[#a8c6b7]" />
@@ -343,8 +349,8 @@ function StorySlide({
             </pre>
           )}
         </section>
-        <section className="flex min-h-0 flex-col bg-[#f2f5f0] dark:bg-[#243028]">
-          <div data-story-scroll className="min-h-0 flex-1 overflow-auto px-5 pt-4 sm:px-7">
+        <section className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-[#dfe5df] bg-[#f2f5f0] dark:border-white/10 dark:bg-[#243028]">
+          <div data-story-scroll className="min-h-0 flex-1 overflow-auto px-5 pt-5 sm:px-7 sm:pt-7">
             <p className="mb-2 text-[10px] font-semibold tracking-widest text-[#6b8174] uppercase dark:text-teal-200">
               {stop.from ? `From ${fileName(stop.from)} → ${fileName(stop.path)}` : "Why this file matters"}
             </p>
@@ -366,12 +372,15 @@ function StorySlide({
               </div>
             ) : analysis.data ? (
               <>
-                <p className="max-w-5xl text-lg leading-[1.35] font-medium tracking-tight sm:text-2xl">
+                <p className="max-w-[36rem] text-lg leading-[1.35] font-medium tracking-tight sm:text-xl xl:text-[1.4rem]">
                   {analysis.data.purpose}
                 </p>
-                <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
+                <ul className="mt-6 grid max-w-[36rem] gap-3 border-t border-[#d6dfd5] pt-5 text-sm leading-relaxed text-muted-foreground dark:border-white/10">
                   {analysis.data.highlights.slice(0, 3).map((highlight) => (
-                    <li key={highlight}>· {highlight}</li>
+                    <li key={highlight} className="flex gap-2.5">
+                      <span aria-hidden="true" className="mt-[0.55em] size-1.5 shrink-0 rounded-full bg-[#709579] dark:bg-[#b9d6bc]" />
+                      <span>{highlight}</span>
+                    </li>
                   ))}
                 </ul>
               </>
@@ -413,7 +422,7 @@ function StorySlide({
         ref={dialog}
         aria-label={panel === "coach" ? "Interview coach" : "Speaking notes"}
         onClose={() => onPanel(null)}
-        className="story-help fixed inset-y-4 right-4 left-auto m-0 max-h-[calc(100dvh-2rem)] w-[min(520px,calc(100vw-2rem))] max-w-none overflow-auto rounded-3xl border bg-background p-5 text-foreground shadow-2xl"
+        className="story-help fixed inset-y-4 right-4 left-auto m-0 max-h-[calc(100dvh-2rem)] w-[min(520px,calc(100vw-2rem))] max-w-none overflow-auto rounded-2xl border bg-background p-5 text-foreground shadow-2xl"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
@@ -435,7 +444,7 @@ function StorySlide({
           <InterviewCoach owner={owner} name={name} path={stop.path} onSelectFile={onSelectFile} />
         </div>
         <div hidden={panel !== "notes"} className="space-y-4 text-sm leading-relaxed">
-          <p className="rounded-2xl bg-[#f4efdb] p-4 dark:bg-amber-950/20">
+          <p className="rounded-xl bg-[#f4efdb] p-4 dark:bg-amber-950/20">
             Explain this file’s purpose and one connection in your own words. Then compare with the notes below.
           </p>
           {analysis.data ? (

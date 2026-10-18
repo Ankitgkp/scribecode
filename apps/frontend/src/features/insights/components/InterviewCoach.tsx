@@ -55,7 +55,7 @@ export function InterviewCoach({
   ];
 
   return (
-    <section className="rounded-[1.5rem] border border-violet-200/70 bg-[#f1edf9] p-5 dark:border-violet-800 dark:bg-violet-950/25">
+    <section className="rounded-xl border border-violet-200/70 bg-[#f1edf9] p-5 dark:border-violet-800 dark:bg-violet-950/25">
       <h3 className="flex items-center gap-2 font-semibold">
         <Sparkles className="size-4 text-violet-600 dark:text-violet-300" /> Your interview coach
       </h3>
@@ -77,7 +77,7 @@ export function InterviewCoach({
       </div>
       <div aria-live="polite" className="mt-4 flex max-h-[480px] flex-col gap-4 overflow-auto">
         {exchanges.map((exchange, index) => (
-          <article key={index} className="rounded-2xl bg-white/80 p-4 dark:bg-white/5">
+          <article key={index} className="rounded-xl bg-white/80 p-4 dark:bg-white/5">
             <p className="text-xs font-semibold text-violet-700 dark:text-violet-300">
               You asked · {exchange.question}
             </p>
@@ -124,7 +124,7 @@ export function InterviewCoach({
           {error}
         </p>
       ) : null}
-      <form onSubmit={submit} className="mt-4 flex items-end gap-2 rounded-2xl bg-white p-2 dark:bg-black/20">
+      <form onSubmit={submit} className="mt-4 flex items-end gap-2 rounded-xl bg-white p-2 dark:bg-black/20">
         <textarea
           aria-label="Ask your interview coach"
           placeholder="Why is this built this way?"

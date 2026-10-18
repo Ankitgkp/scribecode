@@ -21,7 +21,7 @@ export function FileTreePanel({ nodes, status, error, selectedPath, onSelect }: 
   const fileCount = useMemo(() => countFiles(nodes), [nodes]);
 
   return (
-    <div className="flex min-h-[400px] flex-col gap-4 rounded-[1.6rem] bg-white p-4 shadow-[0_14px_40px_-35px_rgba(0,0,0,.3)] dark:bg-[#202525]">
+    <div className="flex min-h-[400px] flex-col gap-4 rounded-xl bg-white p-4 shadow-[0_14px_40px_-35px_rgba(0,0,0,.3)] dark:bg-[#202525]">
       <div className="flex items-center justify-between gap-2 px-1 pt-1">
         <div className="flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-xl bg-[#e5f2ee] text-teal-800 dark:bg-teal-900/50 dark:text-teal-200">
@@ -43,7 +43,7 @@ export function FileTreePanel({ nodes, status, error, selectedPath, onSelect }: 
           value={filter}
           onChange={(event) => setFilter(event.target.value)}
           aria-label="Search files"
-          className="h-10 w-full rounded-full border border-transparent bg-[#f4f5f3] pr-3 pl-10 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:bg-white/5"
+          className="h-10 w-full rounded-lg border border-transparent bg-[#f4f5f3] pr-3 pl-10 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 dark:bg-white/5"
         />
       </div>
 

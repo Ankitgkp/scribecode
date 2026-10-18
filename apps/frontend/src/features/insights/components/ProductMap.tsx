@@ -63,7 +63,7 @@ export function ProductMap({
   }
   if (error && !insights)
     return (
-      <p role="alert" className="rounded-3xl bg-red-50 p-6 text-sm text-destructive">
+      <p role="alert" className="rounded-2xl bg-red-50 p-6 text-sm text-destructive">
         {error}
       </p>
     );
@@ -84,7 +84,7 @@ export function ProductMap({
         <div
           role="tablist"
           aria-label="Map view"
-          className="inline-flex w-fit rounded-full bg-[#e9eae8] p-1 dark:bg-white/10"
+          className="inline-flex w-fit rounded-lg bg-[#e9eae8] p-1 dark:bg-white/10"
         >
           <button
             type="button"
@@ -92,7 +92,7 @@ export function ProductMap({
             aria-selected={mode === "files"}
             onClick={() => setMode("files")}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition",
+              "rounded-md px-4 py-2 text-sm font-medium transition",
               mode === "files" ? "bg-[#252a2a] text-white shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -104,7 +104,7 @@ export function ProductMap({
             aria-selected={mode === "features"}
             onClick={() => setMode("features")}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition",
+              "rounded-md px-4 py-2 text-sm font-medium transition",
               mode === "features" ? "bg-[#252a2a] text-white shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -154,7 +154,7 @@ function FeatureAreas({
 }) {
   if (!modules.length)
     return (
-      <div className="rounded-3xl bg-[#e9f3ef] p-8 text-sm text-muted-foreground">
+      <div className="rounded-2xl bg-[#e9f3ef] p-8 text-sm text-muted-foreground dark:bg-[#1b251f]">
         No feature areas were identified yet.
       </div>
     );
@@ -172,7 +172,7 @@ function FeatureAreas({
               aria-pressed={module.id === selected?.id}
               onClick={() => onSelect(module.id)}
               className={cn(
-                "group relative flex min-h-44 flex-col justify-between overflow-hidden rounded-[1.65rem] p-5 text-left text-[#20252b] transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-white",
+                "group relative flex min-h-44 flex-col justify-between overflow-hidden rounded-xl p-5 text-left text-[#20252b] transition duration-200 hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-white",
                 TONES[index % TONES.length],
                 module.id === selected?.id && "ring-2 ring-[#28302e] ring-offset-2 dark:ring-white",
               )}
@@ -196,7 +196,7 @@ function FeatureAreas({
       </div>
 
       {selected ? (
-        <aside className="flex flex-col justify-between rounded-[1.75rem] bg-[#242b2c] p-6 text-white shadow-[0_20px_38px_-28px_rgba(0,0,0,.6)]">
+        <aside className="flex flex-col justify-between rounded-2xl bg-[#242b2c] p-6 text-white shadow-[0_20px_38px_-28px_rgba(0,0,0,.6)]">
           <div>
             <p className="text-xs font-semibold tracking-[.16em] text-[#c0e5d7] uppercase">Selected area</p>
             <h3 className="mt-3 text-2xl font-semibold leading-tight">{selected.name}</h3>
@@ -249,7 +249,7 @@ function FeatureAreas({
 
 function FlowStories({ flows }: { flows: ProjectInsights["flows"] }) {
   return (
-    <section className="rounded-[1.8rem] bg-[#f0f1ee] p-5 sm:p-7 dark:bg-white/5">
+    <section className="rounded-2xl bg-[#f0f1ee] p-5 sm:p-7 dark:bg-white/5">
       <div className="mb-5 flex items-center gap-2">
         <Waypoints className="size-5" />
         <h3 className="text-lg font-semibold">Follow a user journey</h3>
@@ -259,7 +259,7 @@ function FlowStories({ flows }: { flows: ProjectInsights["flows"] }) {
           <article
             key={flow.id}
             className={cn(
-              "rounded-[1.4rem] p-5",
+              "rounded-xl p-5",
               index % 2 ? "bg-[#e0d7ee] dark:bg-violet-900/50" : "bg-[#d8e9e4] dark:bg-teal-900/50",
             )}
           >

@@ -48,7 +48,7 @@ function RepositoriesContent() {
         ) : null}
 
         {connected.data && connected.data.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-wrap gap-4">
             {connected.data.map((repository) => (
               <RepositoryCard key={repository.id} repository={repository} />
             ))}

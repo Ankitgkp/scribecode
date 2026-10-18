@@ -27,7 +27,7 @@ export function DependencyGraphPanel({ graph, status, error, selectedPath, onSel
   const loading = status === "loading";
 
   return (
-    <Card className="overflow-hidden rounded-[1.75rem] border-[#e7eae8] bg-[#f5f8f5] shadow-none dark:border-white/10 dark:bg-[#26332f]">
+    <Card className="overflow-hidden rounded-2xl border-[#e7eae8] bg-[#f5f8f5] shadow-none dark:border-white/10 dark:bg-[#26332f]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <span className="grid size-9 place-items-center rounded-xl bg-[#d8ebe2] text-[#23634d] dark:bg-teal-900 dark:text-teal-200">
@@ -138,7 +138,7 @@ function DependencyColumn({ title, tone, nodes, emptyLabel, onSelectFile }: Depe
   return (
     <section
       className={cn(
-        "flex flex-col gap-2 rounded-[1.4rem] p-4",
+        "flex flex-col gap-2 rounded-xl p-4",
         tone === "mint" ? "bg-[#dceee7] dark:bg-teal-900/45" : "bg-[#f5e3e9] dark:bg-rose-900/35",
       )}
     >
@@ -174,7 +174,7 @@ function HubList({ hubs, onSelectFile }: HubListProps) {
   }
 
   return (
-    <details className="rounded-[1.3rem] bg-white px-4 py-3 dark:bg-white/5">
+    <details className="rounded-xl bg-white px-4 py-3 dark:bg-white/5">
       <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium">
         <Boxes className="size-4 text-muted-foreground" />
         Most connected files

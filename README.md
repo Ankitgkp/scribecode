@@ -1,4 +1,4 @@
-# Codebase Explorer
+# Scribecode
 
 An AI-powered web app for understanding existing GitHub repositories — especially large ones
 produced by AI coding tools. Connect GitHub, pick a repository, explore its file tree, select a

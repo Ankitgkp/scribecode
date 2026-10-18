@@ -1,49 +1,78 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "@/app/App";
-
-const healthPayload = {
-  status: "ok",
-  uptime: 1.5,
-  timestamp: new Date().toISOString(),
-  version: "0.1.0",
-  environment: "test",
-};
-
-const sessionPayload = { authenticated: false, user: null };
+import { router } from "@/app/router";
+import type { SessionPayload } from "@/features/auth/types";
 
 function jsonResponse(body: unknown) {
   return { ok: true, status: 200, json: async () => body };
 }
 
-function stubFetch() {
+function stubSession(session: SessionPayload) {
   vi.stubGlobal(
     "fetch",
-    vi.fn((input: RequestInfo | URL) => {
-      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
-
-      if (url.includes("/auth/me")) {
-        return Promise.resolve(jsonResponse({ success: true, data: sessionPayload }));
-      }
-
-      return Promise.resolve(jsonResponse({ success: true, data: healthPayload }));
-    }),
+    vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: session }))),
   );
 }
 
-describe("App", () => {
-  afterEach(() => {
+describe("landing page", () => {
+  afterEach(async () => {
+    await act(async () => {
+      await router.navigate("/");
+    });
     vi.unstubAllGlobals();
   });
 
-  it("renders the home page through the router", async () => {
-    stubFetch();
-
+  it("shows the product story and GitHub connection paths for a signed-out visitor", async () => {
+    stubSession({ authenticated: false, user: null });
     render(<App />);
 
-    expect(await screen.findAllByText(/Codebase Explorer/)).not.toHaveLength(0);
-    expect(await screen.findByText("Connect GitHub")).toBeInTheDocument();
-    expect(await screen.findByText("Healthy")).toBeInTheDocument();
+    expect(await screen.findAllByRole("link", { name: "Scribecode" })).not.toHaveLength(0);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("See the system");
+    expect(screen.getByRole("heading", { name: "From repository to understanding." })).toBeInTheDocument();
+    expect(
+      screen
+        .getAllByRole("link", { name: /Connect GitHub/i })
+        .some((link) => link.getAttribute("href") === "/api/v1/auth/github"),
+    ).toBe(true);
+    expect(screen.getByLabelText("Personal access token")).toBeInTheDocument();
+  });
+
+  it("takes a signed-in visitor to their repositories", async () => {
+    stubSession({
+      authenticated: true,
+      user: { id: "1", login: "alex", name: "Alex", email: null, avatarUrl: null, connected: true },
+    });
+    render(<App />);
+
+    expect(await screen.findByRole("link", { name: /Open workspace/i })).toHaveAttribute("href", "/repositories");
+    expect(screen.getByRole("link", { name: /Choose a repository/i })).toHaveAttribute("href", "/repositories");
+    expect(screen.queryByLabelText("Personal access token")).not.toBeInTheDocument();
+  });
+
+  it("does not show an active connection action while the session loads", () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => new Promise(() => {})),
+    );
+    render(<App />);
+
+    expect(screen.getAllByText("Checking session…").length).toBeGreaterThan(0);
+    expect(
+      screen
+        .queryAllByRole("link", { name: /Connect GitHub/i })
+        .some((link) => link.getAttribute("href") === "/api/v1/auth/github"),
+    ).toBe(false);
+  });
+
+  it("keeps the OAuth error visible on return from GitHub", async () => {
+    stubSession({ authenticated: false, user: null });
+    await act(async () => {
+      await router.navigate("/?authError=oauth_failed");
+    });
+    render(<App />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("We could not complete the GitHub sign-in");
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Shape of every response returned by the ScribeCode API.
+ * Shape of every response returned by the Scribecode API.
  * The backend always wraps payloads in this envelope.
  */
 export interface ApiErrorBody {

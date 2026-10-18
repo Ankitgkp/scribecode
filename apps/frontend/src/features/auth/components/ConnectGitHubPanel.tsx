@@ -30,16 +30,16 @@ export function ConnectGitHubPanel() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="mx-auto w-full max-w-[480px] gap-5 rounded-lg py-5 shadow-none sm:py-6">
+      <CardHeader className="gap-2 px-5 sm:px-6">
         <CardTitle className="flex items-center gap-2">
           <GitBranch className="size-4" />
           Connect GitHub
         </CardTitle>
         <CardDescription>Grant read access to the repositories you want to explore.</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <Button asChild>
+      <CardContent className="flex flex-col gap-5 px-5 sm:px-6">
+        <Button asChild size="lg" className="w-full">
           <a href={githubOAuthUrl()}>
             <GitBranch className="size-4" />
             Continue with GitHub
@@ -67,7 +67,7 @@ export function ConnectGitHubPanel() {
             scopes. Handy for local development when OAuth is not configured.
           </p>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          <Button type="submit" variant="secondary" disabled={submitting || token.trim().length === 0}>
+          <Button type="submit" variant="secondary" className="w-full" disabled={submitting || token.trim().length === 0}>
             {submitting ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
             Connect with token
           </Button>
