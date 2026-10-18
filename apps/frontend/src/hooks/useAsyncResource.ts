@@ -22,6 +22,8 @@ const CACHE_TTL_MS = 5 * 60_000;
 const CACHE_LIMIT = 60;
 
 const responseCache = new Map<string, CacheEntry>();
+let cacheGeneration = 0;
+const pendingResources = new Map<string, { promise: Promise<unknown>; controller: AbortController }>();
 
 function readCache<T>(key: string): T | null {
   const entry = responseCache.get(key);
@@ -58,12 +60,48 @@ function writeCache(key: string, data: unknown): void {
 
 /** Clears every memoized response. Exposed for tests. */
 export function clearAsyncResourceCache(): void {
+  cacheGeneration += 1;
+  for (const pending of pendingResources.values()) pending.controller.abort();
+  pendingResources.clear();
   responseCache.clear();
+}
+
+/** Shared by mounted views and bounded background preloads. */
+function loadResource<T>(key: string, loader: (signal: AbortSignal) => Promise<T>, force = false): Promise<T> {
+  if (!force) {
+    const cached = readCache<T>(key);
+    if (cached !== null) return Promise.resolve(cached);
+    const pending = pendingResources.get(key);
+    if (pending) return pending.promise as Promise<T>;
+  }
+  const previous = pendingResources.get(key);
+  previous?.controller.abort();
+  const controller = new AbortController();
+  const generation = cacheGeneration;
+  const entry = { controller, promise: Promise.resolve() as Promise<unknown> };
+  entry.promise = Promise.resolve()
+    .then(() => loader(controller.signal))
+    .then((data) => {
+      if (controller.signal.aborted || generation !== cacheGeneration)
+        throw new DOMException("Resource invalidated", "AbortError");
+      writeCache(key, data);
+      return data;
+    })
+    .finally(() => {
+      if (pendingResources.get(key) === entry) pendingResources.delete(key);
+    });
+  pendingResources.set(key, entry);
+  return entry.promise as Promise<T>;
+}
+
+export function prefetchAsyncResource<T>(key: string, loader: (signal: AbortSignal) => Promise<T>): Promise<void> {
+  return loadResource(key, loader).then(() => undefined);
 }
 
 /**
  * Generic data-loading hook: runs `loader` whenever `key` changes, exposes a
- * normalized status, and aborts in-flight work on unmount or key change.
+ * normalized status, and ignores results after unmount or key change. In-flight
+ * work is shared with preloads so navigation never starts the same request twice.
  *
  * Successful responses are memoized by `key`, so remounting a component (for
  * example when switching tabs) or returning to a view resolves instantly from
@@ -120,23 +158,21 @@ export function useAsyncResource<T>(
       return;
     }
 
-    const controller = new AbortController();
+    let cancelled = false;
 
     setStatus("loading");
     setError(null);
 
-    loaderRef
-      .current(controller.signal)
+    loadResource(key, loaderRef.current, force)
       .then((result) => {
-        if (controller.signal.aborted) {
+        if (cancelled) {
           return;
         }
-        writeCache(key, result);
         setData(result);
         setStatus("success");
       })
       .catch((cause: unknown) => {
-        if (controller.signal.aborted) {
+        if (cancelled) {
           return;
         }
         setData(null);
@@ -145,7 +181,7 @@ export function useAsyncResource<T>(
       });
 
     return () => {
-      controller.abort();
+      cancelled = true;
     };
   }, [key, enabled, reloadToken]);
 

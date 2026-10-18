@@ -28,7 +28,11 @@ clickable neighbourhood, and an AI-generated architecture map groups the reposit
 7. **Practice your story** — follow a reading route from likely entry files through their imports,
    reveal speaking notes, mark stops practiced, and ask questions without leaving the slide.
    The route covers every synced file, with lighter stops for assets and generated files. It is a
-   reading guide, not a runtime trace. File explanations load on demand and are cached by file identity;
+   reading guide, not a runtime trace. Interview mode hides the tree and keeps code, explanation,
+   and chapter navigation in one viewport. Speaking notes and the coach open in an optional overlay.
+   The first two chapters preload automatically; once started, the story stays two chapters ahead.
+   Source and explanations share the navigation cache and in-flight requests, and sync invalidates both.
+   Other file explanations load on demand and are cached by file identity;
    coaching answers are grounded in a bounded selection of source files and cached for repeated questions.
    In the map, select a file in the tree or drag it onto the canvas to follow annotated connections.
 

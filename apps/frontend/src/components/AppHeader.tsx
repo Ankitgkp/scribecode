@@ -15,7 +15,7 @@ export function AppHeader() {
   const { status, user, signOut } = useSession();
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 shrink-0 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 w-full max-w-[1400px] items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <Boxes className="size-5" />

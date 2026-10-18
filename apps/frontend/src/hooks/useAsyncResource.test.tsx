@@ -1,11 +1,55 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearAsyncResourceCache, resourceKey, useAsyncResource } from "@/hooks/useAsyncResource";
+import {
+  clearAsyncResourceCache,
+  prefetchAsyncResource,
+  resourceKey,
+  useAsyncResource,
+} from "@/hooks/useAsyncResource";
 
 describe("useAsyncResource", () => {
   beforeEach(() => {
     clearAsyncResourceCache();
+  });
+
+  it("shares an in-flight preload with a visible slide", async () => {
+    let finish!: (value: { value: number }) => void;
+    const loader = vi.fn(
+      () =>
+        new Promise<{ value: number }>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const preload = prefetchAsyncResource("next-slide", loader);
+    const { result } = renderHook(() => useAsyncResource(loader, "next-slide"));
+    await waitFor(() => expect(loader).toHaveBeenCalledOnce());
+    await act(async () => {
+      finish({ value: 2 });
+      await preload;
+    });
+    expect(result.current.data).toEqual({ value: 2 });
+    expect(loader).toHaveBeenCalledOnce();
+  });
+
+  it("does not resurrect a preload after sync clears the cache", async () => {
+    let finish!: (value: { value: number }) => void;
+    const preload = prefetchAsyncResource(
+      "old-slide",
+      () =>
+        new Promise<{ value: number }>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const rejected = expect(preload).rejects.toMatchObject({ name: "AbortError" });
+    await waitFor(() => expect(finish).toBeDefined());
+    clearAsyncResourceCache();
+    finish({ value: 1 });
+    await rejected;
+    const loader = vi.fn().mockResolvedValue({ value: 3 });
+    const { result } = renderHook(() => useAsyncResource(loader, "old-slide"));
+    await waitFor(() => expect(result.current.data).toEqual({ value: 3 }));
+    expect(loader).toHaveBeenCalledOnce();
   });
 
   it("memoizes a response so remounting does not refetch", async () => {

@@ -12,27 +12,16 @@ export function UnderstandingLoader({
       role="status"
       aria-live="polite"
       className={cn(
-        "flex items-center gap-4",
-        !compact && "flex-col justify-center rounded-3xl bg-teal-50/60 px-6 py-8 dark:bg-teal-950/20",
+        "understanding-wash relative isolate flex items-center justify-center overflow-hidden rounded-2xl",
+        compact ? "min-h-12 gap-3 px-4 py-3" : "min-h-36 px-6 py-8",
       )}
     >
-      <div
-        aria-hidden="true"
-        className={cn(
-          "understanding-wave relative isolate grid shrink-0 grid-cols-9 gap-1.5 overflow-hidden rounded-2xl p-3",
-          compact ? "w-24 gap-1 p-1" : "w-48",
-        )}
-      >
-        <span className="understanding-glow absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-teal-300 via-violet-300 to-pink-300 opacity-65 blur-xl" />
-        {Array.from({ length: 45 }, (_, index) => (
-          <span
-            key={index}
-            className="understanding-cell aspect-square rounded-[3px] bg-teal-500/70 dark:bg-teal-300/70"
-            style={{ animationDelay: `${(index % 9) * 90 + Math.floor(index / 9) * 70}ms` }}
-          />
-        ))}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <span className="understanding-cloud understanding-cloud-a" />
+        <span className="understanding-cloud understanding-cloud-b" />
+        <span className="understanding-cloud understanding-cloud-c" />
       </div>
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="relative text-sm font-medium text-foreground/65">{label}</p>
     </div>
   );
 }

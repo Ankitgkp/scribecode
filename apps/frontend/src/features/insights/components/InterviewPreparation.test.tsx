@@ -9,6 +9,14 @@ import type { ProjectInsights } from "@/features/insights/types";
 const mocks = vi.hoisted(() => ({ ask: vi.fn(), analyze: vi.fn() }));
 vi.mock("@/features/insights/api", () => ({ askInterviewQuestion: mocks.ask }));
 vi.mock("@/features/analysis/hooks/useFileAnalysis", () => ({ useFileAnalysis: mocks.analyze }));
+vi.mock("@/features/insights/hooks/useInterviewPreload", () => ({ useInterviewPreload: vi.fn() }));
+vi.mock("@/features/explorer/hooks/useFileContent", () => ({
+  useFileContent: () => ({
+    status: "success",
+    data: { content: 'import App from "./App";\ncreateRoot(root).render(<App />);' },
+    error: null,
+  }),
+}));
 const insights: ProjectInsights = {
   title: "App",
   summary: "An app",
@@ -70,8 +78,12 @@ describe("interview story", () => {
     expect(mocks.analyze).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: /start my story/i }));
     expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("1");
-    fireEvent.click(screen.getByRole("button", { name: "Reveal speaking notes" }));
+    expect(screen.getByRole("region", { name: "Key code" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Ask your interview coach" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Speaking notes" }));
+    expect(screen.getByRole("dialog", { name: "Speaking notes" })).toBeDefined();
     expect(screen.getByText(/It imports App.tsx/)).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Close chapter details" }));
     fireEvent.click(screen.getByRole("button", { name: "I practiced explaining this stop" }));
     expect(screen.getByRole("button", { name: /Practiced — nice work/ }).getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Next chapter" }));
@@ -88,6 +100,7 @@ describe("interview story", () => {
     });
     render(<Story />);
     fireEvent.click(screen.getByRole("button", { name: /start my story/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask coach" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Ask your interview coach" }), {
       target: { value: "Where does the app start?" },
     });
@@ -101,6 +114,21 @@ describe("interview story", () => {
       expect.any(AbortSignal),
     );
     expect(screen.getByRole("button", { name: "Next chapter" })).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Close chapter details" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask coach" }));
+    expect(screen.getByText("The entry mounts the application root.")).toBeDefined();
+    expect(mocks.ask).toHaveBeenCalledOnce();
+  });
+  it("changes one chapter per scroll gesture and supports arrow-key navigation", () => {
+    render(<Story />);
+    fireEvent.click(screen.getByRole("button", { name: /start my story/i }));
+    const slides = screen.getByLabelText("Interview story slides");
+    fireEvent.wheel(slides, { deltaY: 130 });
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("2");
+    fireEvent.wheel(slides, { deltaY: 130 });
+    expect(screen.queryByText("That’s your project story.")).toBeNull();
+    fireEvent.keyDown(slides, { key: "ArrowLeft" });
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("1");
   });
 });
 describe("file map drop", () => {
